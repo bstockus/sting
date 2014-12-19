@@ -1,4 +1,4 @@
-﻿// Copyright 2014, Bryan Stocks
+﻿//Copyright 2014, Bryan Stocks
 //Licensed under the Apache License, Version 2.0 (the "License");
 //you may not use this file except in compliance with the License.
 //You may obtain a copy of the License at
@@ -19,13 +19,15 @@ using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 
 namespace Sting {
-    public class Host {
+
+    public class OldHost {
 
         private IPAddress ipAddress = null;
         private String dnsName = null;
-
+        
         public String Name {
             get {
                 if (this.dnsName != null) {
@@ -113,6 +115,7 @@ namespace Sting {
             private set {
                 if (this.hostState != value) {
                     this.HostStateTransitionTime = DateTime.Now;
+                    NotifyStateChange(value);
                 }
                 this.hostState = value;
             }
@@ -124,9 +127,11 @@ namespace Sting {
 
         public float Latency { get; private set; }
 
+        private List<PingReply> pingReplyHistory = new List<PingReply>();
+
         public Thread PingThread { get; private set; }
 
-        public Host(IPAddress ipAddress, int pingInterval, bool active) {
+        public OldHost(IPAddress ipAddress, int pingInterval, bool active) {
             this.GUID = Guid.NewGuid().ToString();
             this.ipAddress = ipAddress;
             this.PingThread = new Thread(new ThreadStart(PingProc));
@@ -144,7 +149,7 @@ namespace Sting {
                     PerformPing();
                 }
                 while (true) {
-                    System.Diagnostics.Debug.WriteLine("Thread " + Thread.CurrentThread.Name + ": Host=" + this.GUID + ", IP=" + this.IPAddress.ToString());
+                    //System.Diagnostics.Debug.WriteLine("Thread " + Thread.CurrentThread.Name + ": Host=" + this.GUID + ", IP=" + this.IPAddress.ToString());
 
                     if (this.Active) {
                         if ((lastPingTime + new TimeSpan(0, 0, this.PingInterval) < DateTime.Now )) {
@@ -171,6 +176,7 @@ namespace Sting {
             int timeout = 120;
             PingReply reply = pingSender.Send(this.ipAddress, timeout, buffer, options);
             lastPingTime = DateTime.Now;
+            this.pingReplyHistory.Add(reply);
             if (reply.Status == IPStatus.Success) {
                 System.Diagnostics.Debug.WriteLine(this.IPAddress.ToString() + ": " + reply.ToString());
                 failedPingCounter = 0;
@@ -181,6 +187,23 @@ namespace Sting {
                     this.HostIsUp = false;
                 }
             }
+        }
+
+        private void NotifyStateChange(bool newState) {
+            if (newState) {
+                App.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(
+                () => {
+                    var notify = new NotificationWindow(this.Name, "The host is up.");
+                    notify.Show();
+                }));
+            } else {
+                App.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(
+                () => {
+                    var notify = new NotificationWindow(this.Name, "The host is down.");
+                    notify.Show();
+                }));
+            }
+            
         }
 
         public void Terminate() {

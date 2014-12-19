@@ -20,6 +20,99 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Sting" Height="350" Width="525" Loaded="Window_Loaded" MinWidth="525" MaxWidth="525" MinHeight="350" Closing="Window_Closing">
+    <Window.Resources>
+        <DrawingImage x:Key="ResumeImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    <DrawingGroup x:Name="DrawingLayer">
+                        <DrawingGroup.ClipGeometry>
+                            <RectangleGeometry Rect="0,0,42,41" />
+                        </DrawingGroup.ClipGeometry>
+                        <GeometryDrawing x:Name="path1307" Brush="#FF2268C9">
+                            <GeometryDrawing.Geometry>
+                                <PathGeometry FillRule="Nonzero" Figures="M41.596238,20.522C41.598847,31.848472 32.419858,41.031776 21.0961,41.031776 9.7723411,41.031776 0.59335239,31.848472 0.59596119,20.522 0.59335239,9.1955302 9.7723411,0.012225663 21.0961,0.012225663 32.419858,0.012225663 41.598847,9.1955302 41.596238,20.522L41.596238,20.522z" />
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                        <DrawingGroup x:Name="g2095" Transform="0.6567274,0,0,0.5900984,-47.466632,-35.594698">
+                            <DrawingGroup x:Name="g3490" Transform="1,0,0,1,37.683594,0">
+                                <DrawingGroup x:Name="g3480">
+                                    <DrawingGroup x:Name="g3469">
+                                        <GeometryDrawing x:Name="rect3359">
+                                            <GeometryDrawing.Brush>
+                                                <SolidColorBrush Color="#FFFFFFFF" Opacity="0.35135133" />
+                                            </GeometryDrawing.Brush>
+                                            <GeometryDrawing.Geometry>
+                                                <PathGeometry FillRule="Nonzero" Figures="M64.0625,84.875L57.5,85.46875 57.5,87.5 67.0625,86.625 64.0625,84.875z" />
+                                            </GeometryDrawing.Geometry>
+                                        </GeometryDrawing>
+                                        <GeometryDrawing x:Name="rect3361">
+                                            <GeometryDrawing.Brush>
+                                                <SolidColorBrush Color="#FFFFFFFF" Opacity="0.35135133" />
+                                            </GeometryDrawing.Brush>
+                                            <GeometryDrawing.Geometry>
+                                                <PathGeometry FillRule="Nonzero" Figures="M70.0625,88.34375L57.5,89.5 57.5,92.5 74.5625,90.9375 70.0625,88.34375z" />
+                                            </GeometryDrawing.Geometry>
+                                        </GeometryDrawing>
+                                        <GeometryDrawing x:Name="rect3365">
+                                            <GeometryDrawing.Brush>
+                                                <SolidColorBrush Color="#FFFFFFFF" Opacity="0.35135133" />
+                                            </GeometryDrawing.Brush>
+                                            <GeometryDrawing.Geometry>
+                                                <PathGeometry FillRule="Nonzero" Figures="M70.59375,101.34375L57.5,102.5625 57.5,108.90625 70.59375,101.34375z" />
+                                            </GeometryDrawing.Geometry>
+                                        </GeometryDrawing>
+                                    </DrawingGroup>
+                                    <GeometryDrawing x:Name="path2479" Brush="#FFFFFFFF">
+                                        <GeometryDrawing.Geometry>
+                                            <PathGeometry FillRule="Nonzero" Figures="M57.49988,108.90574L57.49988,81.094255 81.603167,94.999998 57.49988,108.90574z" />
+                                        </GeometryDrawing.Geometry>
+                                    </GeometryDrawing>
+                                    <GeometryDrawing x:Name="path2481" Brush="#FFFFFFFF">
+                                        <GeometryDrawing.Geometry>
+                                            <PathGeometry FillRule="Nonzero" Figures="M57.99988,81.96874L57.99988,108.03124 80.59363,94.99999 57.99988,81.96874z M58.99988,83.71874L78.56238,94.99999 58.99988,106.28124 58.99988,83.71874z" />
+                                        </GeometryDrawing.Geometry>
+                                    </GeometryDrawing>
+                                </DrawingGroup>
+                            </DrawingGroup>
+                        </DrawingGroup>
+                    </DrawingGroup>
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+        <DrawingImage x:Key="PauseImage">
+            <DrawingImage.Drawing>
+                <DrawingGroup xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    <DrawingGroup x:Name="DrawingLayer1">
+                        <DrawingGroup.ClipGeometry>
+                            <RectangleGeometry Rect="0,0,42,41" />
+                        </DrawingGroup.ClipGeometry>
+                        <GeometryDrawing x:Name="path13071" Brush="#FF2268C9">
+                            <GeometryDrawing.Geometry>
+                                <PathGeometry FillRule="Nonzero" Figures="M41.596278,20.522224C41.598887,31.848696 32.419898,41.032 21.09614,41.032 9.7723805,41.032 0.59339176,31.848696 0.59600056,20.522224 0.59339176,9.195753 9.7723805,0.0124489 21.09614,0.0124489 32.419898,0.0124489 41.598887,9.195753 41.596278,20.522224L41.596278,20.522224z" />
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                        <GeometryDrawing x:Name="path2484" Brush="#FFFFFFFF">
+                            <GeometryDrawing.Pen>
+                                <Pen Brush="#FFFFFFFF" Thickness="2.58648634" StartLineCap="Square" EndLineCap="Square" LineJoin="Miter" />
+                            </GeometryDrawing.Pen>
+                            <GeometryDrawing.Geometry>
+                                <PathGeometry FillRule="EvenOdd" Figures="M24.677497,13.54945L24.677497,28.067094 26.461245,28.067094 26.461245,13.54945 24.677497,13.54945z M27.576088,13.54945L27.576088,28.067094 29.359836,28.067094 29.359836,13.54945 27.576088,13.54945z" />
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                        <GeometryDrawing x:Name="path2738" Brush="#FFFFFFFF">
+                            <GeometryDrawing.Pen>
+                                <Pen Brush="#FFFFFFFF" Thickness="2.58648634" StartLineCap="Square" EndLineCap="Square" LineJoin="Miter" />
+                            </GeometryDrawing.Pen>
+                            <GeometryDrawing.Geometry>
+                                <PathGeometry FillRule="EvenOdd" Figures="M11.92163,13.54945L11.92163,28.067094 13.705378,28.067094 13.705378,13.54945 11.92163,13.54945z M14.82022,13.54945L14.82022,28.067094 16.603969,28.067094 16.603969,13.54945 14.82022,13.54945z" />
+                            </GeometryDrawing.Geometry>
+                        </GeometryDrawing>
+                        <DrawingGroup x:Name="layer3" Transform="1,0,0,1,-2.9090515,-3.478068" />
+                    </DrawingGroup>
+                </DrawingGroup>
+            </DrawingImage.Drawing>
+        </DrawingImage>
+    </Window.Resources>
     <DockPanel>
         <ToolBar DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Stretch">
             <DockPanel Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ToolBarPanel}}}">
@@ -29,7 +122,9 @@
                     <Style TargetType="{x:Type Separator}" BasedOn="{StaticResource {x:Static ToolBar.SeparatorStyleKey}}"></Style>
                     <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Static ToolBar.TextBoxStyleKey}}"></Style>
                 </DockPanel.Resources>
-                <Button x:Name="btnPauseAll" Click="btnPauseAll_Click">Pause All</Button>
+                <Button x:Name="btnPauseAll" Click="btnPauseAll_Click">
+                    <Image x:Name="btnPauseAll_img" Height="20" Source="Images/playback_pause_icon.png"></Image>
+                </Button>
                 <Separator/>
                 <Label>Ping Interval:</Label>
                 <ComboBox x:Name="cboPingInterval" SelectedIndex="0" SelectionChanged="cboPingInterval_SelectionChanged">
@@ -43,7 +138,9 @@
                     <ComboBoxItem>1min</ComboBoxItem>
                 </ComboBox>
                 <Separator/>
-                <Button x:Name="btnSettings" Click="btnSettings_Click">Settings</Button>
+                <Button x:Name="btnSettings" Click="btnSettings_Click">
+                    <Image Height="20" Source="Images/cogs_icon.png"></Image>
+                </Button>
                 <TextBox x:Name="txtNewAddress" HorizontalAlignment="Right" KeyUp="txtNewAddress_KeyUp" MinWidth="200"></TextBox>
             </DockPanel>
         </ToolBar>
@@ -62,29 +159,58 @@
                                 <ColumnDefinition></ColumnDefinition>
                                 <ColumnDefinition Width="30"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
-                            <Button x:Name="btnPauseHost" Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Left" Height="50" Width="50" Click="btnPauseHost_Click" Tag="{Binding Path=GUID}">
+                            <Button x:Name="btnPauseHost" 
+                                    Grid.Row="0" 
+                                    Grid.RowSpan="2" 
+                                    Grid.Column="0" 
+                                    VerticalAlignment="Center" 
+                                    HorizontalAlignment="Left" 
+                                    Height="50" 
+                                    Width="50" 
+                                    Click="btnPauseHost_Click" 
+                                    Tag="{Binding Path=GUID}">
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
                                         <ControlTemplate.Triggers>
                                             <DataTrigger Binding="{Binding Path=Active}" Value="false">
-                                                <Setter Property="Image.Source"  Value="Images\play.png" TargetName="img"></Setter>
+                                                <Setter Property="Image.Source" Value="{StaticResource ResourceKey=ResumeImage}" TargetName="img"></Setter>
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding Path=Active}" Value="true">
-                                                <Setter Property="Image.Source" Value="Images\pause.png" TargetName="img" ></Setter>
+                                                <Setter Property="Image.Source" Value="{StaticResource ResourceKey=PauseImage}" TargetName="img"></Setter>
                                             </DataTrigger>
                                         </ControlTemplate.Triggers>
                                         <Image x:Name="img"></Image>
                                     </ControlTemplate>
                                 </Button.Template>
                             </Button>
-                            
-                            <TextBlock Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="{Binding Path=Name}" FontSize="24.0" FontWeight="Bold" VerticalAlignment="Bottom" Tag="{Binding Path=GUID}"></TextBlock>
+                            <TextBlock Grid.Row="0" 
+                                       Grid.Column="1" 
+                                       Grid.ColumnSpan="2" 
+                                       Text="{Binding Path=Name}" 
+                                       FontSize="24.0" 
+                                       FontWeight="Bold" 
+                                       VerticalAlignment="Bottom" 
+                                       Tag="{Binding Path=GUID}"></TextBlock>
                             <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=SubName}" VerticalAlignment="Top"></TextBlock>
-                            <TextBlock Grid.Row="1" Grid.RowSpan="1" Grid.Column="2" Text="{Binding Path=StatusText}"  FontSize="18.0" VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
-                            <Button x:Name="btnRemoveHost" Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" VerticalAlignment="Center" Height="30" Width="30" Click="btnRemoveHost_Click" Tag="{Binding Path=GUID}">
+                            <TextBlock Grid.Row="1" 
+                                       Grid.RowSpan="1" 
+                                       Grid.Column="2" 
+                                       Text="{Binding Path=StatusText}" 
+                                       FontSize="18.0" 
+                                       VerticalAlignment="Center" 
+                                       HorizontalAlignment="Center"></TextBlock>
+                            <Button x:Name="btnRemoveHost" 
+                                    Grid.Row="0" 
+                                    Grid.RowSpan="2" 
+                                    Grid.Column="3" 
+                                    VerticalAlignment="Top" 
+                                    Height="30" 
+                                    Width="30" 
+                                    Click="btnRemoveHost_Click" 
+                                    Tag="{Binding Path=GUID}">
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
-                                        <Image Source="Images\minus-512.gif"></Image>
+                                        <Image Source="Images\round_delete_icon.png"></Image>
                                     </ControlTemplate>
                                 </Button.Template>
                             </Button>

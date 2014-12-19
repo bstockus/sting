@@ -1,4 +1,4 @@
-﻿// Copyright 2014, Bryan Stocks
+﻿//Copyright 2014, Bryan Stocks
 //Licensed under the Apache License, Version 2.0 (the "License");
 //you may not use this file except in compliance with the License.
 //You may obtain a copy of the License at
@@ -34,10 +34,28 @@ namespace Sting {
     /// </summary>
     public partial class MainWindow : Window {
 
-        private ObservableCollection<Host> hosts = new ObservableCollection<Host>();
+        private ObservableCollection<OldHost> hosts = new ObservableCollection<OldHost>();
 
         private int pingInterval = 1;
         private bool globalActive = true;
+
+        public Boolean Active {
+            get {
+                return this.globalActive;
+            }
+
+            private set {
+                this.globalActive = value;
+                if (this.globalActive) {
+                    string packUri = "pack://application:,,,/Sting;component/Images/playback_pause_icon.png";
+                    btnPauseAll_img.Source = new ImageSourceConverter().ConvertFromString(packUri) as ImageSource;
+                } else {
+                    string packUri = "pack://application:,,,/Sting;component/Images/playback_play_icon.png";
+                    btnPauseAll_img.Source = new ImageSourceConverter().ConvertFromString(packUri) as ImageSource;
+                }
+                 
+            }
+        }
 
         private static int[] PING_INTERVALS = new int[] { 1, 2, 3, 5, 10, 15, 30, 60 };
 
@@ -48,25 +66,24 @@ namespace Sting {
         }
 
         private void btnPauseAll_Click(object sender, RoutedEventArgs e) {
-            if (globalActive) {
-                foreach (Host host in hosts) {
+            System.Diagnostics.Debug.WriteLine("MainWindow.btnPauseAll_Click()");
+            if (this.Active) {
+                foreach (OldHost host in hosts) {
                     host.Active = false;
                 }
-                btnPauseAll.Content = "Resume All";
                 lstHosts.Items.Refresh();
-                globalActive = false;
+                this.Active = false;
             } else {
-                foreach (Host host in hosts) {
+                foreach (OldHost host in hosts) {
                     host.Active = true;
                 }
-                btnPauseAll.Content = "Pause All";
                 lstHosts.Items.Refresh();
-                globalActive = true;
+                this.Active = true;
             }
         }
 
         private void btnSettings_Click(object sender, RoutedEventArgs e) {
-            System.Diagnostics.Process.Start("http://www.google.com");
+            System.Diagnostics.Process.Start("http://www.bryanstockus.com/sting.html");
         }
 
         private void btnToolbarAdd_Click(object sender, RoutedEventArgs e) {
@@ -76,7 +93,7 @@ namespace Sting {
         private void cboPingInterval_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             ComboBox cbo = (ComboBox)sender;
             pingInterval = PING_INTERVALS[cbo.SelectedIndex];
-            foreach (Host host in hosts) {
+            foreach (OldHost host in hosts) {
                 host.PingInterval = pingInterval;
             }
         }
@@ -90,28 +107,29 @@ namespace Sting {
         }
 
         private void btnPauseHost_Click(object sender, RoutedEventArgs e) {
-            Host host = GetHostByGUID((String)(((Button)sender).Tag));
+            OldHost host = GetHostByGUID((String)(((Button)sender).Tag));
             host.Active = !host.Active;
             lstHosts.Items.Refresh();
         }
 
         private void btnRemoveHost_Click(object sender, RoutedEventArgs e) {
-            Host host = GetHostByGUID((String)(((Button)sender).Tag));
+            OldHost host = GetHostByGUID((String)(((Button)sender).Tag));
             hosts.Remove(host);
             host.Terminate();
             lstHosts.Items.Refresh();
         }
 
-        private Host GetHostByGUID(String GUID) {
-            Host host = hosts.First(p => GUID.Equals(p.GUID));
+        private OldHost GetHostByGUID(String GUID) {
+            OldHost host = hosts.First(p => GUID.Equals(p.GUID));
             return host;
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-            foreach (Host host in hosts) {
+            foreach (OldHost host in hosts) {
                 host.Terminate();
             }
         }
+
         private void dispatcherTimer_Tick(object sender, EventArgs e) {
             lstHosts.Items.Refresh();
         }
@@ -124,26 +142,31 @@ namespace Sting {
         }
 
         async void AddNewHost(String dnsName) {
+            IPAddress _tempAddress;
+            if (IPAddress.TryParse(dnsName, out _tempAddress)) {
+                OldHost host = new OldHost(_tempAddress, this.pingInterval, this.Active);
+                this.hosts.Add(host);
+                lstHosts.Items.Refresh();
+                txtNewAddress.Text = "";
+                return;
+            }
             try {
                 IPAddress[] addresses = await Dns.GetHostAddressesAsync(dnsName);
                 if (addresses != null) {
                     if (addresses.Length > 0) {
                         IPAddress address = addresses[0];
-                        Host host = new Host(address, this.pingInterval, this.globalActive);
-                        IPAddress _tempAddress;
-                        if (!IPAddress.TryParse(dnsName, out _tempAddress)) {
-                            host.DNSName = dnsName;
-                        }
+                        OldHost host = new OldHost(address, this.pingInterval, this.Active);
                         this.hosts.Add(host);
                         lstHosts.Items.Refresh();
                         txtNewAddress.Text = "";
+                        host.DNSName = dnsName;
                         return;
                     }
                 }
+                throw new Exception();
             } catch (Exception e) {
-
+                MessageBox.Show(this, "Unable to resolve host: " + dnsName + "!", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            MessageBox.Show(this, "Unable to resolve host: " + dnsName + "!", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
 
