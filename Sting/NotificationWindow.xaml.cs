@@ -31,7 +31,7 @@ using System.Windows.Threading;
 
 namespace Sting {
     public partial class NotificationWindow : Window {
-        public NotificationWindow(string title, string message) {
+        public NotificationWindow(string title, string message, int id) {
             InitializeComponent();
 
             lblNotification.Inlines.Add(new Bold(new Run(title)));
@@ -45,6 +45,8 @@ namespace Sting {
 
                 this.Left = corner.X - this.ActualWidth - 100;
                 this.Top = corner.Y - this.ActualHeight;
+
+                NotificationManager.GetNotificationManager().UpdateWindowPositions(this.ActualHeight, this, id);
             }));
         }
     }

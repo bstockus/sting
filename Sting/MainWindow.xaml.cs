@@ -64,6 +64,8 @@ namespace Sting {
                 string packUri = "pack://application:,,,/Sting;component/Images/playback_play_icon.png";
                 btnPauseAll_img.Source = new ImageSourceConverter().ConvertFromString(packUri) as ImageSource;
                 this.IsPaused = true;
+                this.HostsManager.PauseAllHosts();
+                lstHosts.Items.Refresh();
                 this.pingDispatchTimer.Stop();
                 this.updateDispatchTimer.Stop();
                 lstHosts.Effect = new BlurEffect();
@@ -71,6 +73,8 @@ namespace Sting {
                 string packUri = "pack://application:,,,/Sting;component/Images/playback_pause_icon.png";
                 btnPauseAll_img.Source = new ImageSourceConverter().ConvertFromString(packUri) as ImageSource;
                 this.IsPaused = false;
+                this.HostsManager.UnPauseAllHosts();
+                lstHosts.Items.Refresh();
                 this.pingDispatchTimer.Start();
                 this.updateDispatchTimer.Start();
                 lstHosts.IsEnabled = true;
@@ -102,7 +106,9 @@ namespace Sting {
 
         private void btnPauseHost_Click(object sender, RoutedEventArgs e) {
             if (!this.IsPaused) {
-
+                System.Diagnostics.Debug.WriteLine("MainWindow.btnPauseHost_Click()");
+                this.HostsManager.ToggleHostPause((String)((Button)sender).Tag);
+                lstHosts.Items.Refresh();
             }
         }
 

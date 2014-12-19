@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Sting.HostProvider {
@@ -25,7 +26,12 @@ namespace Sting.HostProvider {
         }
 
         public bool ValidHostValue(string value) {
-            return true;
+            try {
+                new Uri("http://" + value);
+                return true;
+            } catch (UriFormatException) {
+                return false;
+            }
         }
     }
 }

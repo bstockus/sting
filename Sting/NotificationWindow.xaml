@@ -21,7 +21,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   Title="Notification Popup" Width="300" SizeToContent="Height"
-  WindowStyle="None" AllowsTransparency="True" Background="Transparent">
+  WindowStyle="None" AllowsTransparency="True" Background="Transparent" Focusable="False">
 
     <Grid RenderTransformOrigin="0,1" >
 
@@ -42,8 +42,8 @@
                             <SplineDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
                         </DoubleAnimationUsingKeyFrames>
                         <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)">
-                            <SplineDoubleKeyFrame KeyTime="0:0:2" Value="1"/>
-                            <SplineDoubleKeyFrame KeyTime="0:0:4" Value="0"/>
+                            <SplineDoubleKeyFrame KeyTime="0:0:6" Value="1"/>
+                            <SplineDoubleKeyFrame KeyTime="0:0:10" Value="0"/>
                         </DoubleAnimationUsingKeyFrames>
                     </Storyboard>
                 </BeginStoryboard>

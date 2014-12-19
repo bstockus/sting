@@ -43,6 +43,7 @@ namespace Sting {
 
         public HostsManager() {
             hostProviders.Add(new IPHostProvider());
+            hostProviders.Add(new SpecialSubNetHostProvider());
             hostProviders.Add(new DnsHostProvider());
         }
 
@@ -76,6 +77,33 @@ namespace Sting {
                     hosts.Remove(host);
                     return;
                 }
+            }
+        }
+
+        public void ToggleHostPause(String guid) {
+            System.Diagnostics.Debug.WriteLine("HostsManager.ToggleHostPause() guid='" + guid + "'");
+            foreach (BasicHost host in this.hosts) {
+                if (host.GUID.Equals(guid)) {
+                    System.Diagnostics.Debug.WriteLine("HostsManager.ToggleHostPause() match='" + host.ToString() + "'");
+                    if (host.IsPaused) {
+                        host.UnPause();
+                    } else {
+                        host.Pause();
+                    }
+                    return;
+                }
+            }
+        }
+
+        public void PauseAllHosts() {
+            foreach (BasicHost host in this.hosts) {
+                host.Pause();
+            }
+        }
+
+        public void UnPauseAllHosts() {
+            foreach (BasicHost host in this.hosts) {
+                host.UnPause();
             }
         }
 

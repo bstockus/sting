@@ -78,6 +78,7 @@
     <Compile Include="HostProvider\DnsHostProvider.cs" />
     <Compile Include="HostProvider\IHostProvider.cs" />
     <Compile Include="HostProvider\IPHostProvider.cs" />
+    <Compile Include="HostProvider\SpecialSubNetHostProvider.cs" />
     <Compile Include="HostsManager.cs" />
     <Compile Include="Host\BasicHost.cs" />
     <Compile Include="Host\DnsHost.cs" />
@@ -97,7 +98,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="OldHost.cs" />
+    <Compile Include="NotificationManager.cs" />
     <Compile Include="NotificationWindow.xaml.cs">
       <DependentUpon>NotificationWindow.xaml</DependentUpon>
     </Compile>

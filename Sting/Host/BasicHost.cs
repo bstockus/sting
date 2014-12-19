@@ -78,8 +78,10 @@ namespace Sting.Host {
             get {
                 if (!this.IsPaused && this.hostUp) {
                     return this.CalculateLatencyAverage();
-                } else {
+                } else if (!this.IsPaused) {
                     return this.GetHostDownReason();
+                } else {
+                    return "";
                 }
             }
         }
@@ -104,10 +106,12 @@ namespace Sting.Host {
 
         public void Pause() {
             this.paused = true;
+            this.lastStatusChangeTime = DateTime.Now;
         }
 
         public void UnPause() {
             this.paused = false;
+            this.lastStatusChangeTime = DateTime.Now;
         }
 
         public void RemoveHost() {
@@ -131,6 +135,7 @@ namespace Sting.Host {
                     if (!this.hostUp) {
                         this.lastStatusChangeTime = DateTime.Now;
                         this.hostUp = true;
+                        NotificationManager.GetNotificationManager().Notify(this.Title, "Host is Up!");
                     }
                     this.badPingAttemptCounter = 0;
                     System.Diagnostics.Debug.WriteLine("Good Ping from " + this.IPAddress.ToString());
@@ -139,6 +144,7 @@ namespace Sting.Host {
                     if (this.badPingAttemptCounter >= BAD_PING_ATTEMPTS_ALLOWED_BEFORE_DOWN && this.hostUp) {
                         this.lastStatusChangeTime = DateTime.Now;
                         this.hostUp = false;
+                        NotificationManager.GetNotificationManager().Notify(this.Title, "Host is Down!");
                     }
                     System.Diagnostics.Debug.WriteLine("Bad Ping from " + this.IPAddress.ToString());
                 }
