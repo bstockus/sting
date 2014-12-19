@@ -152,6 +152,7 @@
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="30"></RowDefinition>
                                 <RowDefinition></RowDefinition>
+                                <RowDefinition></RowDefinition>
                             </Grid.RowDefinitions>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="60"></ColumnDefinition>
@@ -161,7 +162,7 @@
                             </Grid.ColumnDefinitions>
                             <Button x:Name="btnPauseHost" 
                                     Grid.Row="0" 
-                                    Grid.RowSpan="2" 
+                                    Grid.RowSpan="3" 
                                     Grid.Column="0" 
                                     VerticalAlignment="Center" 
                                     HorizontalAlignment="Left" 
@@ -172,10 +173,10 @@
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
                                         <ControlTemplate.Triggers>
-                                            <DataTrigger Binding="{Binding Path=Active}" Value="false">
+                                            <DataTrigger Binding="{Binding Path=IsPaused}" Value="false">
                                                 <Setter Property="Image.Source" Value="{StaticResource ResourceKey=ResumeImage}" TargetName="img"></Setter>
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding Path=Active}" Value="true">
+                                            <DataTrigger Binding="{Binding Path=IsPaused}" Value="true">
                                                 <Setter Property="Image.Source" Value="{StaticResource ResourceKey=PauseImage}" TargetName="img"></Setter>
                                             </DataTrigger>
                                         </ControlTemplate.Triggers>
@@ -186,22 +187,22 @@
                             <TextBlock Grid.Row="0" 
                                        Grid.Column="1" 
                                        Grid.ColumnSpan="2" 
-                                       Text="{Binding Path=Name}" 
+                                       Text="{Binding Path=Title}" 
                                        FontSize="24.0" 
                                        FontWeight="Bold" 
-                                       VerticalAlignment="Bottom" 
-                                       Tag="{Binding Path=GUID}"></TextBlock>
-                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=SubName}" VerticalAlignment="Top"></TextBlock>
+                                       VerticalAlignment="Bottom"></TextBlock>
+                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Path=SubTitle}" VerticalAlignment="Top"></TextBlock>
+                            <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding Path=Details}" VerticalAlignment="Top"></TextBlock>
                             <TextBlock Grid.Row="1" 
-                                       Grid.RowSpan="1" 
+                                       Grid.RowSpan="2" 
                                        Grid.Column="2" 
-                                       Text="{Binding Path=StatusText}" 
+                                       Text="{Binding Path=Status}" 
                                        FontSize="18.0" 
                                        VerticalAlignment="Center" 
                                        HorizontalAlignment="Center"></TextBlock>
                             <Button x:Name="btnRemoveHost" 
                                     Grid.Row="0" 
-                                    Grid.RowSpan="2" 
+                                    Grid.RowSpan="3" 
                                     Grid.Column="3" 
                                     VerticalAlignment="Top" 
                                     Height="30" 

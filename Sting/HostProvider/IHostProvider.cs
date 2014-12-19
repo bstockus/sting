@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Sting.Host;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 namespace Sting.HostProvider {
     public interface IHostProvider {
 
-        IPAddress Lookup(String value);
+        BasicHost Host(String value);
 
         Boolean ValidHostValue(String value);
 

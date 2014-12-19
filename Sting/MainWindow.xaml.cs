@@ -11,6 +11,7 @@
 //See the License for the specific language governing permissions and
 //limitations under the License.
 
+using Sting.Host;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -24,6 +25,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
@@ -34,51 +36,45 @@ namespace Sting {
     /// </summary>
     public partial class MainWindow : Window {
 
-        private ObservableCollection<OldHost> hosts = new ObservableCollection<OldHost>();
+        private HostsManager hostsManager = new HostsManager();
 
         private int pingInterval = 1;
-        private bool globalActive = true;
 
-        public Boolean Active {
+        public HostsManager HostsManager {
             get {
-                return this.globalActive;
-            }
-
-            private set {
-                this.globalActive = value;
-                if (this.globalActive) {
-                    string packUri = "pack://application:,,,/Sting;component/Images/playback_pause_icon.png";
-                    btnPauseAll_img.Source = new ImageSourceConverter().ConvertFromString(packUri) as ImageSource;
-                } else {
-                    string packUri = "pack://application:,,,/Sting;component/Images/playback_play_icon.png";
-                    btnPauseAll_img.Source = new ImageSourceConverter().ConvertFromString(packUri) as ImageSource;
-                }
-                 
+                return this.hostsManager;
             }
         }
 
+        public Boolean IsPaused { get; set; }
+
         private static int[] PING_INTERVALS = new int[] { 1, 2, 3, 5, 10, 15, 30, 60 };
 
-        private System.Windows.Threading.DispatcherTimer dispatcherTimer = new System.Windows.Threading.DispatcherTimer();
+        private System.Windows.Threading.DispatcherTimer pingDispatchTimer = new System.Windows.Threading.DispatcherTimer();
+        private System.Windows.Threading.DispatcherTimer updateDispatchTimer = new System.Windows.Threading.DispatcherTimer();
 
         public MainWindow() {
+            this.IsPaused = false;
             InitializeComponent();
         }
 
         private void btnPauseAll_Click(object sender, RoutedEventArgs e) {
             System.Diagnostics.Debug.WriteLine("MainWindow.btnPauseAll_Click()");
-            if (this.Active) {
-                foreach (OldHost host in hosts) {
-                    host.Active = false;
-                }
-                lstHosts.Items.Refresh();
-                this.Active = false;
+            if (!this.IsPaused) {
+                string packUri = "pack://application:,,,/Sting;component/Images/playback_play_icon.png";
+                btnPauseAll_img.Source = new ImageSourceConverter().ConvertFromString(packUri) as ImageSource;
+                this.IsPaused = true;
+                this.pingDispatchTimer.Stop();
+                this.updateDispatchTimer.Stop();
+                lstHosts.Effect = new BlurEffect();
             } else {
-                foreach (OldHost host in hosts) {
-                    host.Active = true;
-                }
-                lstHosts.Items.Refresh();
-                this.Active = true;
+                string packUri = "pack://application:,,,/Sting;component/Images/playback_pause_icon.png";
+                btnPauseAll_img.Source = new ImageSourceConverter().ConvertFromString(packUri) as ImageSource;
+                this.IsPaused = false;
+                this.pingDispatchTimer.Start();
+                this.updateDispatchTimer.Start();
+                lstHosts.IsEnabled = true;
+                lstHosts.Effect = null;
             }
         }
 
@@ -86,51 +82,47 @@ namespace Sting {
             System.Diagnostics.Process.Start("http://www.bryanstockus.com/sting.html");
         }
 
-        private void btnToolbarAdd_Click(object sender, RoutedEventArgs e) {
-
-        }
-
         private void cboPingInterval_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             ComboBox cbo = (ComboBox)sender;
             pingInterval = PING_INTERVALS[cbo.SelectedIndex];
-            foreach (OldHost host in hosts) {
-                host.PingInterval = pingInterval;
-            }
+            this.pingDispatchTimer.Interval = new TimeSpan(0, 0, this.pingInterval);
+            
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e) {
-            this.lstHosts.ItemsSource = this.hosts;
+            this.lstHosts.ItemsSource = this.hostsManager.Hosts;
 
-            this.dispatcherTimer.Tick += new EventHandler(dispatcherTimer_Tick);
-            this.dispatcherTimer.Interval = new TimeSpan(0, 0, 1);
-            this.dispatcherTimer.Start();
+            this.pingDispatchTimer.Tick += new EventHandler(pingDispatchTimer_Tick);
+            this.pingDispatchTimer.Interval = new TimeSpan(0, 0, this.pingInterval);
+            this.pingDispatchTimer.Start();
+            this.updateDispatchTimer.Tick += new EventHandler(updateDispatchTimer_Tick);
+            this.updateDispatchTimer.Interval = new TimeSpan(0, 0, 1);
+            this.updateDispatchTimer.Start();
         }
 
         private void btnPauseHost_Click(object sender, RoutedEventArgs e) {
-            OldHost host = GetHostByGUID((String)(((Button)sender).Tag));
-            host.Active = !host.Active;
-            lstHosts.Items.Refresh();
-        }
+            if (!this.IsPaused) {
 
-        private void btnRemoveHost_Click(object sender, RoutedEventArgs e) {
-            OldHost host = GetHostByGUID((String)(((Button)sender).Tag));
-            hosts.Remove(host);
-            host.Terminate();
-            lstHosts.Items.Refresh();
-        }
-
-        private OldHost GetHostByGUID(String GUID) {
-            OldHost host = hosts.First(p => GUID.Equals(p.GUID));
-            return host;
-        }
-
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
-            foreach (OldHost host in hosts) {
-                host.Terminate();
             }
         }
 
-        private void dispatcherTimer_Tick(object sender, EventArgs e) {
+        private void btnRemoveHost_Click(object sender, RoutedEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("MainWindow.btnRemoveHost_Click()");
+            this.HostsManager.RemoveHost((String)((Button)sender).Tag);
+            lstHosts.Items.Refresh();
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
+            
+        }
+
+        private void pingDispatchTimer_Tick(object sender, EventArgs e) {
+            System.Diagnostics.Debug.WriteLine("MainWindow.pingDispatchTimer_Tick()");
+            this.HostsManager.PingHosts();
+        }
+
+        private void updateDispatchTimer_Tick(object sender, EventArgs e) {
+            System.Diagnostics.Debug.WriteLine("MainWindow.updateDispatchTimer_Tick()");
             lstHosts.Items.Refresh();
         }
 
@@ -141,32 +133,8 @@ namespace Sting {
             }
         }
 
-        async void AddNewHost(String dnsName) {
-            IPAddress _tempAddress;
-            if (IPAddress.TryParse(dnsName, out _tempAddress)) {
-                OldHost host = new OldHost(_tempAddress, this.pingInterval, this.Active);
-                this.hosts.Add(host);
-                lstHosts.Items.Refresh();
-                txtNewAddress.Text = "";
-                return;
-            }
-            try {
-                IPAddress[] addresses = await Dns.GetHostAddressesAsync(dnsName);
-                if (addresses != null) {
-                    if (addresses.Length > 0) {
-                        IPAddress address = addresses[0];
-                        OldHost host = new OldHost(address, this.pingInterval, this.Active);
-                        this.hosts.Add(host);
-                        lstHosts.Items.Refresh();
-                        txtNewAddress.Text = "";
-                        host.DNSName = dnsName;
-                        return;
-                    }
-                }
-                throw new Exception();
-            } catch (Exception e) {
-                MessageBox.Show(this, "Unable to resolve host: " + dnsName + "!", "ERROR", MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+        void AddNewHost(String value) {
+            this.hostsManager.AddHost(value, this);  
         }
 
 

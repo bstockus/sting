@@ -74,10 +74,13 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="DnsService.cs" />
+    <Compile Include="HostProvider\DnsHostProvider.cs" />
     <Compile Include="HostProvider\IHostProvider.cs" />
     <Compile Include="HostProvider\IPHostProvider.cs" />
     <Compile Include="HostsManager.cs" />
     <Compile Include="Host\BasicHost.cs" />
+    <Compile Include="Host\DnsHost.cs" />
     <Compile Include="Host\IControllableHost.cs" />
     <Compile Include="Host\IDisplayableHost.cs" />
     <Compile Include="Host\IGroupableHost.cs" />

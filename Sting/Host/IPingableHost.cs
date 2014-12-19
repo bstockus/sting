@@ -8,7 +8,9 @@ using System.Threading.Tasks;
 namespace Sting.Host {
     public interface IPingableHost {
 
-        void Ping();
+        IPAddress IPAddress { get; }
+
+        Task Ping();
 
     }
 }
