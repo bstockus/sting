@@ -114,7 +114,7 @@
         </DrawingImage>
     </Window.Resources>
     <DockPanel>
-        <ToolBar DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Stretch">
+        <ToolBar DockPanel.Dock="Top" VerticalAlignment="Top" HorizontalAlignment="Stretch" ToolBarTray.IsLocked="True" Loaded="tbMain_Loaded">
             <DockPanel Width="{Binding Path=ActualWidth, RelativeSource={RelativeSource AncestorType={x:Type ToolBarPanel}}}">
                 <DockPanel.Resources>
                     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"></Style>
@@ -123,7 +123,13 @@
                     <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource {x:Static ToolBar.TextBoxStyleKey}}"></Style>
                 </DockPanel.Resources>
                 <Button x:Name="btnPauseAll" Click="btnPauseAll_Click">
-                    <Image x:Name="btnPauseAll_img" Height="20" Source="Images/playback_pause_icon.png"></Image>
+                    <Image x:Name="btnPauseAll_img" Height="20" Source="../Images/playback_pause_icon.png"></Image>
+                </Button>
+                <Button x:Name="btnNotifyToggle" Click="btnNotifyToggle_Click">
+                    <Image x:Name="btnNotifyToggle_img" Height="20" Source="../Images/eye_inv_icon.png"></Image>
+                </Button>
+                <Button x:Name="btnRemoveAllHosts" Click="btnRemoveAllHosts_Click">
+                    <Image x:Name="btnRemoveAllHosts_img" Height="20" Source="../Images/delete_icon.png"></Image>
                 </Button>
                 <Separator/>
                 <Label>Ping Interval:</Label>
@@ -139,7 +145,7 @@
                 </ComboBox>
                 <Separator/>
                 <Button x:Name="btnSettings" Click="btnSettings_Click">
-                    <Image Height="20" Source="Images/cogs_icon.png"></Image>
+                    <Image Height="20" Source="../Images/cogs_icon.png"></Image>
                 </Button>
                 <TextBox x:Name="txtNewAddress" HorizontalAlignment="Right" KeyUp="txtNewAddress_KeyUp" MinWidth="200"></TextBox>
             </DockPanel>
@@ -211,7 +217,7 @@
                                     Tag="{Binding Path=GUID}">
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
-                                        <Image Source="Images\round_delete_icon.png"></Image>
+                                        <Image Source="../Images/round_delete_icon.png"></Image>
                                     </ControlTemplate>
                                 </Button.Template>
                             </Button>

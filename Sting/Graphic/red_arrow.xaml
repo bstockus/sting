@@ -1,0 +1,61 @@
+﻿<DrawingGroup xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <DrawingGroup x:Name="DrawingLayer">
+        <DrawingGroup.ClipGeometry>
+            <RectangleGeometry Rect="0,0,163.7628,156.22485" />
+        </DrawingGroup.ClipGeometry>
+        <DrawingGroup x:Name="layer1" Transform="1,0,0,1,-286.69,-451.3927">
+            <GeometryDrawing x:Name="rect1941" Brush="#FFFF0000">
+                <GeometryDrawing.Geometry>
+                    <RectangleGeometry RadiusX="0" RadiusY="0" Rect="322.1531,537.3505,92.3656,70.267" />
+                </GeometryDrawing.Geometry>
+            </GeometryDrawing>
+            <GeometryDrawing x:Name="path1961">
+                <GeometryDrawing.Brush>
+                    <SolidColorBrush Color="#FFFF0000" Opacity="1" Transform="1.333966,0,0,0.813833,122.775,131.6461" />
+                </GeometryDrawing.Brush>
+                <GeometryDrawing.Geometry>
+                    <PathGeometry FillRule="Nonzero" Transform="1.333966,0,0,0.813833,122.775,131.6461" Figures="M184.25986,392.88966L245.64178,499.20627 122.87793,499.20626 184.25986,392.88966z" />
+                </GeometryDrawing.Geometry>
+            </GeometryDrawing>
+            <GeometryDrawing Brush="#FFFF0000">
+                <GeometryDrawing.Geometry>
+                    <RectangleGeometry RadiusX="0" RadiusY="0" Rect="322.1531,537.3505,92.3656,70.267" />
+                </GeometryDrawing.Geometry>
+            </GeometryDrawing>
+            <GeometryDrawing>
+                <GeometryDrawing.Brush>
+                    <SolidColorBrush Color="#FFFF0000" Opacity="1" Transform="1.333966,0,0,0.813833,122.775,131.6461" />
+                </GeometryDrawing.Brush>
+                <GeometryDrawing.Geometry>
+                    <PathGeometry FillRule="Nonzero" Transform="1.333966,0,0,0.813833,122.775,131.6461" Figures="M184.25986,392.88966L245.64178,499.20627 122.87793,499.20626 184.25986,392.88966z" />
+                </GeometryDrawing.Geometry>
+            </GeometryDrawing>
+            <GeometryDrawing Brush="#FFFF0000">
+                <GeometryDrawing.Geometry>
+                    <RectangleGeometry RadiusX="0" RadiusY="0" Rect="322.1531,537.3505,92.3656,70.267" />
+                </GeometryDrawing.Geometry>
+            </GeometryDrawing>
+            <GeometryDrawing>
+                <GeometryDrawing.Brush>
+                    <SolidColorBrush Color="#FFFF0000" Opacity="1" Transform="1.333966,0,0,0.813833,122.775,131.6461" />
+                </GeometryDrawing.Brush>
+                <GeometryDrawing.Geometry>
+                    <PathGeometry FillRule="Nonzero" Transform="1.333966,0,0,0.813833,122.775,131.6461" Figures="M184.25986,392.88966L245.64178,499.20627 122.87793,499.20626 184.25986,392.88966z" />
+                </GeometryDrawing.Geometry>
+            </GeometryDrawing>
+            <GeometryDrawing Brush="#FFFF0000">
+                <GeometryDrawing.Geometry>
+                    <RectangleGeometry RadiusX="0" RadiusY="0" Rect="322.1531,537.3505,92.3656,70.267" />
+                </GeometryDrawing.Geometry>
+            </GeometryDrawing>
+            <GeometryDrawing>
+                <GeometryDrawing.Brush>
+                    <SolidColorBrush Color="#FFFF0000" Opacity="1" Transform="1.333966,0,0,0.813833,122.775,131.6461" />
+                </GeometryDrawing.Brush>
+                <GeometryDrawing.Geometry>
+                    <PathGeometry FillRule="Nonzero" Transform="1.333966,0,0,0.813833,122.775,131.6461" Figures="M184.25986,392.88966L245.64178,499.20627 122.87793,499.20626 184.25986,392.88966z" />
+                </GeometryDrawing.Geometry>
+            </GeometryDrawing>
+        </DrawingGroup>
+    </DrawingGroup>
+</DrawingGroup>

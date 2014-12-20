@@ -17,9 +17,11 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Threading;
 
 namespace Sting {
+
     public sealed class NotificationManager {
 
         private static NotificationManager singleton = null;
@@ -33,6 +35,8 @@ namespace Sting {
 
         private List<NotificationWindow> notificationWindows = new List<NotificationWindow>();
 
+        public Boolean IsEnabled { get; set; }
+
         private int currentHighId = 0;
         private int currentLowId = 0;
 
@@ -40,16 +44,20 @@ namespace Sting {
             if (NotificationManager.singleton != null) {
                 throw new Exception("Trying to create another instance of NotificationManager. This class is a singleton. Come on Son!");
             }
+            this.IsEnabled = true;
         }
 
         public void Notify(string title, string message) {
-            Task.Run(() => {
-                NotificationWindow notificationWindow;
-                App.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => {
-                    notificationWindow = new NotificationWindow(title, message, currentHighId++);
-                    notificationWindow.Show();
-                }));
-            });
+            if (this.IsEnabled) {
+                Task.Run(() => {
+                    NotificationWindow notificationWindow;
+                    App.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => {
+                        notificationWindow = new NotificationWindow(title, message, currentHighId++);
+                        notificationWindow.Show();
+                        Application.Current.MainWindow.Activate();
+                    }));
+                });
+            }
         }
 
         public void UpdateWindowPositions(double actualHeight, NotificationWindow notificationWindow, int id) {

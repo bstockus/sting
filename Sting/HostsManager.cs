@@ -80,6 +80,13 @@ namespace Sting {
             }
         }
 
+        public void RemoveAllHost() {
+            foreach (BasicHost host in this.hosts) {
+                host.RemoveHost();
+            }
+            hosts.Clear();
+        }
+
         public void ToggleHostPause(String guid) {
             System.Diagnostics.Debug.WriteLine("HostsManager.ToggleHostPause() guid='" + guid + "'");
             foreach (BasicHost host in this.hosts) {

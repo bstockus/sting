@@ -31,9 +31,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 namespace Sting {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
+    
     public partial class MainWindow : Window {
 
         private HostsManager hostsManager = new HostsManager();
@@ -82,15 +80,46 @@ namespace Sting {
             }
         }
 
+        private void btnNotifyToggle_Click(object sender, RoutedEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("MainWindow.btnNotifyToggle_Click()");
+            if (!NotificationManager.GetNotificationManager().IsEnabled) {
+                string packUri = "pack://application:,,,/Sting;component/Images/eye_inv_icon.png";
+                btnNotifyToggle_img.Source = new ImageSourceConverter().ConvertFromString(packUri) as ImageSource;
+                NotificationManager.GetNotificationManager().IsEnabled = true;
+            } else {
+                string packUri = "pack://application:,,,/Sting;component/Images/invisible_revert_icon.png";
+                btnNotifyToggle_img.Source = new ImageSourceConverter().ConvertFromString(packUri) as ImageSource;
+                NotificationManager.GetNotificationManager().IsEnabled = false;
+            }
+        }
+        private void btnRemoveAllHosts_Click(object sender, RoutedEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("MainWindow.btnRemoveAllHosts_Click()");
+            this.HostsManager.RemoveAllHost();
+        }
+
         private void btnSettings_Click(object sender, RoutedEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("MainWindow.btnSettings_Click()");
             System.Diagnostics.Process.Start("http://www.bryanstockus.com/sting.html");
         }
 
         private void cboPingInterval_SelectionChanged(object sender, SelectionChangedEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("MainWindow.cboPingInterval_SelectionChanged()");
             ComboBox cbo = (ComboBox)sender;
             pingInterval = PING_INTERVALS[cbo.SelectedIndex];
             this.pingDispatchTimer.Interval = new TimeSpan(0, 0, this.pingInterval);
             
+        }
+        private void tbMain_Loaded(object sender, RoutedEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("MainWindow.tbMain_Loaded()");
+            ToolBar toolBar = sender as ToolBar;
+            var overflowGrid = toolBar.Template.FindName("OverflowGrid", toolBar) as FrameworkElement;
+            if (overflowGrid != null) {
+                overflowGrid.Visibility = Visibility.Collapsed;
+            }
+            var mainPanelBorder = toolBar.Template.FindName("MainPanelBorder", toolBar) as FrameworkElement;
+            if (mainPanelBorder != null) {
+                mainPanelBorder.Margin = new Thickness();
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e) {
@@ -142,7 +171,6 @@ namespace Sting {
         void AddNewHost(String value) {
             this.hostsManager.AddHost(value, this);  
         }
-
 
     }
 }
