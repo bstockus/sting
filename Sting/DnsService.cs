@@ -19,6 +19,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Sting {
+
     public class DnsService {
 
         public static IPAddress Lookup(String value) {

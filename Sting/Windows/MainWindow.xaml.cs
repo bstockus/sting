@@ -99,6 +99,11 @@ namespace Sting {
 
         private void btnSettings_Click(object sender, RoutedEventArgs e) {
             System.Diagnostics.Debug.WriteLine("MainWindow.btnSettings_Click()");
+            
+        }
+
+        private void btnAbout_Click(object sender, RoutedEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("MainWindow.btnAbout_Click()");
             System.Diagnostics.Process.Start("http://www.bryanstockus.com/sting.html");
         }
 
