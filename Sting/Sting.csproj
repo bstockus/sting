@@ -155,29 +155,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\playback_pause_icon.png" />
-    <Resource Include="Images\playback_play_icon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\cogs_icon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\round_delete_icon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\eye_inv_icon.png" />
-    <Resource Include="Images\invisible_revert_icon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\info_icon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\monitor_icon.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Images\delete_icon.png" />
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
       <Visible>False</Visible>
       <ProductName>Microsoft .NET Framework 4.5 %28x86 and x64%29</ProductName>
@@ -202,6 +179,26 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="output.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\act_browser_icon.png" />
+    <Resource Include="Images\act_refresh_icon.png" />
+    <Resource Include="Images\act_shell_icon.png" />
+    <Resource Include="Images\act_vnc_icon.png" />
+    <Resource Include="Images\browser_icon.png" />
+    <Resource Include="Images\cogs_icon.png" />
+    <Resource Include="Images\delete_icon.png" />
+    <Resource Include="Images\eye_inv_icon.png" />
+    <Resource Include="Images\green_up_arrow.png" />
+    <Resource Include="Images\info_icon.png" />
+    <Resource Include="Images\invisible_revert_icon.png" />
+    <Resource Include="Images\playback_pause_icon.png" />
+    <Resource Include="Images\playback_play_icon.png" />
+    <Resource Include="Images\red_down_arrow.png" />
+    <Resource Include="Images\refresh_icon.png" />
+    <Resource Include="Images\round_delete_icon.png" />
+    <Resource Include="Images\shell_icon.png" />
+    <Resource Include="Images\vnc_icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

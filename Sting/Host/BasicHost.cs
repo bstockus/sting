@@ -114,6 +114,24 @@ namespace Sting.Host {
             this.lastStatusChangeTime = DateTime.Now;
         }
 
+        public Boolean IsVncServiceAvailable {
+            get {
+                return true;
+            }
+        }
+
+        public Boolean IsShellServiceAvailable {
+            get {
+                return true;
+            }
+        }
+
+        public Boolean IsWebServiceAvailable {
+            get {
+                return true;
+            }
+        }
+
         public void RemoveHost() {
             // Nothing to do at this point
         }
