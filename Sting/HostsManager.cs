@@ -68,16 +68,9 @@ namespace Sting {
             });
         }
 
-        public void RemoveHost(String guid) {
-            System.Diagnostics.Debug.WriteLine("HostsManager.RemoveHost() guid='" + guid + "'");
-            foreach (BasicHost host in this.hosts) {
-                if (host.GUID.Equals(guid)) {
-                    System.Diagnostics.Debug.WriteLine("HostsManager.RemoveHost() match='" + host.ToString() + "'");
-                    host.RemoveHost();
-                    hosts.Remove(host);
-                    return;
-                }
-            }
+        public void RemoveHost(BasicHost host) {
+            host.RemoveHost();
+            hosts.Remove(host);
         }
 
         public void RemoveAllHost() {
@@ -87,41 +80,23 @@ namespace Sting {
             hosts.Clear();
         }
 
-        public void ToggleHostPause(String guid) {
-            System.Diagnostics.Debug.WriteLine("HostsManager.ToggleHostPause() guid='" + guid + "'");
-            foreach (BasicHost host in this.hosts) {
-                if (host.GUID.Equals(guid)) {
-                    System.Diagnostics.Debug.WriteLine("HostsManager.ToggleHostPause() match='" + host.ToString() + "'");
-                    if (host.IsPaused) {
-                        host.UnPause();
-                    } else {
-                        host.Pause();
-                    }
-                    return;
-                }
-            }
-        }
-
-        public void PauseAllHosts() {
-            foreach (BasicHost host in this.hosts) {
+        public void ToggleHostPause(BasicHost host) {
+            if (host.IsPaused) {
+                host.UnPause();
+            } else {
                 host.Pause();
             }
         }
 
-        public void UnPauseAllHosts() {
-            foreach (BasicHost host in this.hosts) {
-                host.UnPause();
-            }
-        }
-
         public void PingHosts() {
-
-            foreach (BasicHost host in this.hosts) {
-                if (!host.IsPaused) {
-                    System.Diagnostics.Debug.WriteLine("Sent Ping to " + host.IPAddress.ToString());
-                    host.Ping().Start();
+            Task.Run(() => {
+                foreach (BasicHost host in this.hosts) {
+                    if (!host.IsPaused) {
+                        System.Diagnostics.Debug.WriteLine("Sent Ping to " + host.IPAddress.ToString());
+                        host.Ping().Start();
+                    }
                 }
-            }
+            });
         }
 
     }

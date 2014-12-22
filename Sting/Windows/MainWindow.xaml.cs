@@ -15,6 +15,7 @@ using Sting.Host;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -32,7 +33,7 @@ using System.Windows.Shapes;
 
 namespace Sting {
     
-    public partial class MainWindow : Window {
+    public partial class MainWindow : Window, INotifyPropertyChanged {
 
         private HostsManager hostsManager = new HostsManager();
 
@@ -44,7 +45,27 @@ namespace Sting {
             }
         }
 
-        public Boolean IsPaused { get; set; }
+        private Boolean paused = false;
+
+        public Boolean IsPaused {
+            get {
+                return this.paused;
+            }
+            set {
+                this.paused = value;
+                this.OnPropertyChanged("IsPaused");
+
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(string name) {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) {
+                handler(this, new PropertyChangedEventArgs(name));
+            }
+        }
 
         private static int[] PING_INTERVALS = new int[] { 1, 2, 3, 5, 10, 15, 30, 60 };
 
@@ -62,21 +83,18 @@ namespace Sting {
                 string packUri = "pack://application:,,,/Sting;component/Images/playback_play_icon.png";
                 btnPauseAll_img.Source = new ImageSourceConverter().ConvertFromString(packUri) as ImageSource;
                 this.IsPaused = true;
-                this.HostsManager.PauseAllHosts();
-                lstHosts.Items.Refresh();
                 this.pingDispatchTimer.Stop();
                 this.updateDispatchTimer.Stop();
                 lstHosts.Effect = new BlurEffect();
+                lstHosts.IsEnabled = false;
             } else {
                 string packUri = "pack://application:,,,/Sting;component/Images/playback_pause_icon.png";
                 btnPauseAll_img.Source = new ImageSourceConverter().ConvertFromString(packUri) as ImageSource;
                 this.IsPaused = false;
-                this.HostsManager.UnPauseAllHosts();
-                lstHosts.Items.Refresh();
                 this.pingDispatchTimer.Start();
                 this.updateDispatchTimer.Start();
-                lstHosts.IsEnabled = true;
                 lstHosts.Effect = null;
+                lstHosts.IsEnabled = true;
             }
         }
 
@@ -115,7 +133,6 @@ namespace Sting {
             
         }
         private void tbMain_Loaded(object sender, RoutedEventArgs e) {
-            System.Diagnostics.Debug.WriteLine("MainWindow.tbMain_Loaded()");
             ToolBar toolBar = sender as ToolBar;
             var overflowGrid = toolBar.Template.FindName("OverflowGrid", toolBar) as FrameworkElement;
             if (overflowGrid != null) {
@@ -138,32 +155,23 @@ namespace Sting {
             this.updateDispatchTimer.Start();
         }
 
-        private void btnPauseHost_Click(object sender, RoutedEventArgs e) {
-            if (!this.IsPaused) {
-                System.Diagnostics.Debug.WriteLine("MainWindow.btnPauseHost_Click()");
-                this.HostsManager.ToggleHostPause((String)((Button)sender).Tag);
-                lstHosts.Items.Refresh();
-            }
-        }
-
-        private void btnRemoveHost_Click(object sender, RoutedEventArgs e) {
-            System.Diagnostics.Debug.WriteLine("MainWindow.btnRemoveHost_Click()");
-            this.HostsManager.RemoveHost((String)((Button)sender).Tag);
-            lstHosts.Items.Refresh();
-        }
-
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
             
         }
 
         private void pingDispatchTimer_Tick(object sender, EventArgs e) {
             System.Diagnostics.Debug.WriteLine("MainWindow.pingDispatchTimer_Tick()");
-            this.HostsManager.PingHosts();
+            if (!this.IsPaused) {
+                this.HostsManager.PingHosts();
+            }
         }
 
         private void updateDispatchTimer_Tick(object sender, EventArgs e) {
             System.Diagnostics.Debug.WriteLine("MainWindow.updateDispatchTimer_Tick()");
-            lstHosts.Items.Refresh();
+            foreach (BasicHost host in this.HostsManager.Hosts) {
+                host.OnPropertyChanged(new PropertyChangedEventArgs("Status"));
+            }
+            //lstHosts.Items.Refresh();
         }
 
         private void txtNewAddress_KeyUp(object sender, KeyEventArgs e) {
@@ -175,6 +183,18 @@ namespace Sting {
 
         void AddNewHost(String value) {
             this.hostsManager.AddHost(value, this);  
+        }
+
+        private void btnPauseHost_Click(object sender, RoutedEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("MainWindow.btnPauseHost_Click()");
+            BasicHost host = (BasicHost)(((Button)sender).DataContext);
+            this.HostsManager.ToggleHostPause(host);
+        }
+
+        private void btnRemoveHost_Click(object sender, RoutedEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("MainWindow.btnRemoveHost_Click()");
+            BasicHost host = (BasicHost)(((Button)sender).DataContext);
+            this.HostsManager.RemoveHost(host);
         }
 
     }

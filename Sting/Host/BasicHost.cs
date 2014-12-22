@@ -13,6 +13,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
@@ -20,7 +21,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Sting.Host {
-    public abstract class BasicHost : IPingableHost, IDisplayableHost, IControllableHost, IRemovableHost {
+    public abstract class BasicHost : IPingableHost, IDisplayableHost, IControllableHost, IRemovableHost, INotifyPropertyChanged {
 
         private static int BAD_PING_ATTEMPTS_ALLOWED_BEFORE_DOWN = 4;
 
@@ -65,11 +66,7 @@ namespace Sting.Host {
                     } else {
                         timeSpan = ts.ToString("%h'h '%m'm '%s's'");
                     }
-                    if (this.IsHostUp) {
-                        return "Up for " + timeSpan;
-                    } else {
-                        return "Down for " + timeSpan;
-                    }
+                    return timeSpan;
                 }
             }
         }
@@ -77,9 +74,7 @@ namespace Sting.Host {
         public string Details {
             get {
                 if (!this.IsPaused && this.hostUp) {
-                    return this.CalculateLatencyAverage();
-                } else if (!this.IsPaused) {
-                    return this.GetHostDownReason();
+                    return this.details;
                 } else {
                     return "";
                 }
@@ -107,11 +102,17 @@ namespace Sting.Host {
         public void Pause() {
             this.paused = true;
             this.lastStatusChangeTime = DateTime.Now;
+            this.OnPropertyChanged(new PropertyChangedEventArgs("IsPaused"));
+            this.OnPropertyChanged(new PropertyChangedEventArgs("Details"));
+            this.OnPropertyChanged(new PropertyChangedEventArgs("Status"));
         }
 
         public void UnPause() {
             this.paused = false;
             this.lastStatusChangeTime = DateTime.Now;
+            this.OnPropertyChanged(new PropertyChangedEventArgs("IsPaused"));
+            this.OnPropertyChanged(new PropertyChangedEventArgs("Details"));
+            this.OnPropertyChanged(new PropertyChangedEventArgs("Status"));
         }
 
         public Boolean IsVncServiceAvailable {
@@ -149,11 +150,15 @@ namespace Sting.Host {
 
                 this.pingReplyHistory.Add(new Tuple<DateTime, PingReply>(DateTime.Now, reply));
 
+                this.details = this.CalculateLatencyAverage();
+                this.OnPropertyChanged(new PropertyChangedEventArgs("Details"));
+
                 if (reply.Status == IPStatus.Success) {
                     if (!this.hostUp) {
                         this.lastStatusChangeTime = DateTime.Now;
                         this.hostUp = true;
-                        NotificationManager.GetNotificationManager().Notify(this.Title, "Host is Up!");
+                        NotificationManager.GetNotificationManager().Notify(this.Title, "Host is Up!", "green_up_arrow.png");
+                        this.OnPropertyChanged(new PropertyChangedEventArgs("IsHostUp"));
                     }
                     this.badPingAttemptCounter = 0;
                     System.Diagnostics.Debug.WriteLine("Good Ping from " + this.IPAddress.ToString());
@@ -162,7 +167,8 @@ namespace Sting.Host {
                     if (this.badPingAttemptCounter >= BAD_PING_ATTEMPTS_ALLOWED_BEFORE_DOWN && this.hostUp) {
                         this.lastStatusChangeTime = DateTime.Now;
                         this.hostUp = false;
-                        NotificationManager.GetNotificationManager().Notify(this.Title, "Host is Down!");
+                        NotificationManager.GetNotificationManager().Notify(this.Title, "Host is Down!", "red_down_arrow.png");
+                        this.OnPropertyChanged(new PropertyChangedEventArgs("IsHostUp"));
                     }
                     System.Diagnostics.Debug.WriteLine("Bad Ping from " + this.IPAddress.ToString());
                 }
@@ -194,8 +200,8 @@ namespace Sting.Host {
                     count++;
                 }
             }
-
-            return (sum / count).ToString() + "ms (" + min.ToString() + "ms - " + max.ToString() + "ms)";
+            this.OnPropertyChanged(new PropertyChangedEventArgs("Details"));
+            return (sum / count).ToString() + "ms";
         }
 
         private string GetHostDownReason() {
@@ -205,6 +211,13 @@ namespace Sting.Host {
             } else {
                 return "";
             }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void OnPropertyChanged(PropertyChangedEventArgs e) {
+            if (PropertyChanged != null)
+                PropertyChanged(this, e);
         }
 
     }

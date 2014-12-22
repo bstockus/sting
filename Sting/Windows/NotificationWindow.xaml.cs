@@ -31,8 +31,11 @@ using System.Windows.Threading;
 
 namespace Sting {
     public partial class NotificationWindow : Window {
-        public NotificationWindow(string title, string message, int id) {
+        public NotificationWindow(string title, string message, int id, string imageName) {
             InitializeComponent();
+
+            string packUri = "pack://application:,,,/Sting;component/Images/" + imageName;
+            imgNotification.Source = new ImageSourceConverter().ConvertFromString(packUri) as ImageSource;
 
             lblNotification.Inlines.Add(new Bold(new Run(title)));
             lblNotification.Inlines.Add(new Run(": "));

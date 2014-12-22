@@ -200,6 +200,10 @@
     <Resource Include="Images\shell_icon.png" />
     <Resource Include="Images\vnc_icon.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\act_round_delete.png" />
+    <Resource Include="Images\round_delete.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
