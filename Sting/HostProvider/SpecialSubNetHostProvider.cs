@@ -18,7 +18,7 @@ namespace Sting.HostProvider {
             int _tempIntValue;
             IPAddress hostAddress;
             if (!int.TryParse(hostValue, out _tempIntValue)) {
-                hostAddress = DnsService.Lookup(value);
+                hostAddress = DnsService.Lookup(value.Substring(1));
             } else {
                 IPAddress siteAddress;
                 if (hostsCache.ContainsKey(siteValue)) {
@@ -33,7 +33,7 @@ namespace Sting.HostProvider {
                 hostAddress = new IPAddress(siteAddressBytes);
             }
             
-            return new DnsBasicHost(hostAddress, siteValue + "/" + hostValue);
+            return new GroupedDnsHost(hostAddress, siteValue + "/" + hostValue, siteValue);
         }
 
         public bool ValidHostValue(string value) {

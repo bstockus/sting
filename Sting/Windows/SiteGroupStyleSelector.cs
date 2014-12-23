@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 
 namespace Sting.Windows {
 
@@ -15,7 +16,7 @@ namespace Sting.Windows {
         public Style SiteGroupStyle { get; set; }
 
         public override Style SelectStyle(object item, DependencyObject container) {
-            GroupItem groupItem = (GroupItem)item;
+            CollectionViewGroup groupItem = (CollectionViewGroup)item;
             if (groupItem.Name == "") {
                 return DefaultStyle;
             } else {

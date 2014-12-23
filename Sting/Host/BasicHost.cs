@@ -33,6 +33,8 @@ namespace Sting.Host {
         protected String groupName = "";
         private String guid;
 
+        private String detailsTooltip;
+
         private DateTime lastStatusChangeTime = DateTime.Now;
         private DateTime firstBadPingTime = DateTime.Now;
         private Boolean isInBadPingStreak = false;
@@ -83,6 +85,16 @@ namespace Sting.Host {
             get {
                 if (!this.IsPaused) {
                     return this.details;
+                } else {
+                    return "";
+                }
+            }
+        }
+
+        public string DetailsTooltip {
+            get {
+                if (!this.IsPaused) {
+                    return this.detailsTooltip;
                 } else {
                     return "";
                 }
@@ -148,57 +160,64 @@ namespace Sting.Host {
 
         public Task Ping() {
             Task task = new Task(() => {
-                Ping ping = new Ping();
-                PingOptions pingOptions = new PingOptions();
-
-                pingOptions.DontFragment = true;
-                string data = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-                byte[] buffer = Encoding.ASCII.GetBytes(data);
-
-                PingReply reply = ping.Send(this.IPAddress, 120, buffer, pingOptions);
-
-                this.pingReplyHistory.Add(new Tuple<DateTime, PingReply>(DateTime.Now, reply));
-
-                if (reply.Status == IPStatus.Success) {
-                    if (this.isInBadPingStreak) {
-                        this.isInBadPingStreak = false;
-                    }
-                    if (!this.hostUp) {
-                        this.lastStatusChangeTime = DateTime.Now;
-                        this.hostUp = true;
-                        NotificationManager.GetNotificationManager().Notify(this.Title, "Host is Up!", "green_up_arrow.png");
-                        this.OnPropertyChanged(new PropertyChangedEventArgs("IsHostUp"));
-                    }
-                    System.Diagnostics.Debug.WriteLine("Good Ping from " + this.IPAddress.ToString());
-                    
-                } else {
-                    if (this.IsHostUp) {
-                        if (!this.isInBadPingStreak) {
-                            this.isInBadPingStreak = true;
-                            this.firstBadPingTime = DateTime.Now;
-                        } else if (DateTime.Now - this.firstBadPingTime > BAD_PING_STREAK_TIMEOUT) {
-                            this.lastStatusChangeTime = DateTime.Now;
-                            this.hostUp = false;
-                            NotificationManager.GetNotificationManager().Notify(this.Title, "Host is Down!", "red_down_arrow.png");
-                            this.OnPropertyChanged(new PropertyChangedEventArgs("IsHostUp"));
-                        }
-                    }
-                    System.Diagnostics.Debug.WriteLine("Bad Ping from " + this.IPAddress.ToString());
+                if (!this.IsPaused) {
+                    this.DoPing();
                 }
-
-                if (!this.IsHostUp) {
-                    this.details = this.GetHostDownReason();
-                } else {
-                    this.details = this.CalculateLatencyAverage();
-                }
-                this.OnPropertyChanged(new PropertyChangedEventArgs("Details"));
-
             });
             return task;
         }
 
-        private string CalculateLatencyAverage() {
+        private void DoPing() {
+            System.Diagnostics.Debug.WriteLine("Sent Ping to " + this.IPAddress.ToString());
+            Ping ping = new Ping();
+            PingOptions pingOptions = new PingOptions();
+
+            pingOptions.DontFragment = true;
+            string data = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+            byte[] buffer = Encoding.ASCII.GetBytes(data);
+
+            PingReply reply = ping.Send(this.IPAddress, 120, buffer, pingOptions);
+
+            this.pingReplyHistory.Add(new Tuple<DateTime, PingReply>(DateTime.Now, reply));
+
+            if (reply.Status == IPStatus.Success) {
+                if (this.isInBadPingStreak) {
+                    this.isInBadPingStreak = false;
+                }
+                if (!this.hostUp) {
+                    this.lastStatusChangeTime = DateTime.Now;
+                    this.hostUp = true;
+                    NotificationManager.GetNotificationManager().Notify(this.Title, "Host is Up!", "green_up_arrow.png");
+                    this.OnPropertyChanged(new PropertyChangedEventArgs("IsHostUp"));
+                }
+                System.Diagnostics.Debug.WriteLine("Good Ping from " + this.IPAddress.ToString());
+
+            } else {
+                if (this.IsHostUp) {
+                    if (!this.isInBadPingStreak) {
+                        this.isInBadPingStreak = true;
+                        this.firstBadPingTime = DateTime.Now;
+                    } else if (DateTime.Now - this.firstBadPingTime > BAD_PING_STREAK_TIMEOUT) {
+                        this.lastStatusChangeTime = DateTime.Now;
+                        this.hostUp = false;
+                        NotificationManager.GetNotificationManager().Notify(this.Title, "Host is Down!", "red_down_arrow.png");
+                        this.OnPropertyChanged(new PropertyChangedEventArgs("IsHostUp"));
+                    }
+                }
+                System.Diagnostics.Debug.WriteLine("Bad Ping from " + this.IPAddress.ToString());
+            }
+
+            if (this.IsHostUp) {
+                this.UpdateDetailsForHostUp();
+            } else {
+                this.UpdateDetailsForHostDown();
+            }
+            
+        }
+
+        private void UpdateDetailsForHostUp() {
             DateTime minuteAgo = DateTime.Now - new TimeSpan(0, 1, 0);
+            DateTime fiveMinutesAgo = DateTime.Now - new TimeSpan(0, 5, 0);
             var lastMinutePingReplys = from tuple in this.pingReplyHistory
                                        where tuple.Item1 > minuteAgo
                                        select tuple.Item2;
@@ -206,8 +225,13 @@ namespace Sting.Host {
             int count = 0;
             int max = 0;
             int min = 0;
+
+            int totalPings = 0;
+            int badPings = 0;
+
             Boolean first = true;
             foreach (PingReply pingReply in lastMinutePingReplys) {
+                totalPings++;
                 if (pingReply.Status == IPStatus.Success) {
                     int rtTime = (int)pingReply.RoundtripTime;
                     if (first) {
@@ -218,19 +242,35 @@ namespace Sting.Host {
                     if (rtTime > max) max = rtTime;
                     sum += rtTime;
                     count++;
+                } else {
+                    badPings++;
                 }
             }
+
+            float badPingPercentage = ((float)badPings / (float)totalPings) * 100.0f;
+
+            this.details = (sum / count).ToString() + "ms";
+            this.detailsTooltip = "Min = " + min.ToString() + "ms, Max = " + max.ToString() + "ms" + System.Environment.NewLine
+                + "Bad Pings = " + badPings.ToString() + "/" + totalPings.ToString() + " (" + badPingPercentage.ToString("F2") + "%)";
             this.OnPropertyChanged(new PropertyChangedEventArgs("Details"));
-            return (sum / count).ToString() + "ms";
+            this.OnPropertyChanged(new PropertyChangedEventArgs("DetailsTooltip"));
         }
 
-        private string GetHostDownReason() {
+        private void UpdateDetailsForHostDown() {
             if (this.pingReplyHistory.Count > 0) {
                 PingReply lastPingReply = this.pingReplyHistory[this.pingReplyHistory.Count - 1].Item2;
-                return System.Enum.GetName(typeof(IPStatus), lastPingReply.Status);
+                this.details = System.Enum.GetName(typeof(IPStatus), lastPingReply.Status);
+                if (lastPingReply.Address != null) {
+                    this.detailsTooltip = "Reply from " + lastPingReply.Address.ToString();
+                } else {
+                    this.detailsTooltip = "";
+                }
             } else {
-                return "";
+                this.details = "";
+                this.detailsTooltip = "";
             }
+            this.OnPropertyChanged(new PropertyChangedEventArgs("Details"));
+            this.OnPropertyChanged(new PropertyChangedEventArgs("DetailsTooltip"));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

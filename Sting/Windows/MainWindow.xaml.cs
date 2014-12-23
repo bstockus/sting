@@ -37,24 +37,9 @@ namespace Sting {
 
         private HostsManager hostsManager = new HostsManager();
 
-        private int pingInterval = 1;
-
         public HostsManager HostsManager {
             get {
                 return this.hostsManager;
-            }
-        }
-
-        private Boolean paused = false;
-
-        public Boolean IsPaused {
-            get {
-                return this.paused;
-            }
-            set {
-                this.paused = value;
-                this.OnPropertyChanged("IsPaused");
-
             }
         }
 
@@ -67,32 +52,21 @@ namespace Sting {
             }
         }
 
-        private static int[] PING_INTERVALS = new int[] { 1, 2, 3, 5, 10, 15, 30, 60 };
-
-        private System.Windows.Threading.DispatcherTimer pingDispatchTimer = new System.Windows.Threading.DispatcherTimer();
-        private System.Windows.Threading.DispatcherTimer updateDispatchTimer = new System.Windows.Threading.DispatcherTimer();
-
         public MainWindow() {
-            this.IsPaused = false;
             InitializeComponent();
         }
 
         private void btnPauseAll_Click(object sender, RoutedEventArgs e) {
             System.Diagnostics.Debug.WriteLine("MainWindow.btnPauseAll_Click()");
-            if (!this.IsPaused) {
+            this.HostsManager.ToggleAllHostsPause();
+            if (!this.HostsManager.IsPaused) {
                 string packUri = "pack://application:,,,/Sting;component/Images/playback_play_icon.png";
                 btnPauseAll_img.Source = new ImageSourceConverter().ConvertFromString(packUri) as ImageSource;
-                this.IsPaused = true;
-                this.pingDispatchTimer.Stop();
-                this.updateDispatchTimer.Stop();
                 lstHosts.Effect = new BlurEffect();
                 lstHosts.IsEnabled = false;
             } else {
                 string packUri = "pack://application:,,,/Sting;component/Images/playback_pause_icon.png";
                 btnPauseAll_img.Source = new ImageSourceConverter().ConvertFromString(packUri) as ImageSource;
-                this.IsPaused = false;
-                this.pingDispatchTimer.Start();
-                this.updateDispatchTimer.Start();
                 lstHosts.Effect = null;
                 lstHosts.IsEnabled = true;
             }
@@ -128,9 +102,7 @@ namespace Sting {
         private void cboPingInterval_SelectionChanged(object sender, SelectionChangedEventArgs e) {
             System.Diagnostics.Debug.WriteLine("MainWindow.cboPingInterval_SelectionChanged()");
             ComboBox cbo = (ComboBox)sender;
-            pingInterval = PING_INTERVALS[cbo.SelectedIndex];
-            this.pingDispatchTimer.Interval = new TimeSpan(0, 0, this.pingInterval);
-            
+            this.HostsManager.SetPingInterval(cbo.SelectedIndex);
         }
         private void tbMain_Loaded(object sender, RoutedEventArgs e) {
             ToolBar toolBar = sender as ToolBar;
@@ -147,31 +119,13 @@ namespace Sting {
         private void Window_Loaded(object sender, RoutedEventArgs e) {
             this.lstHosts.ItemsSource = this.hostsManager.Hosts;
 
-            this.pingDispatchTimer.Tick += new EventHandler(pingDispatchTimer_Tick);
-            this.pingDispatchTimer.Interval = new TimeSpan(0, 0, this.pingInterval);
-            this.pingDispatchTimer.Start();
-            this.updateDispatchTimer.Tick += new EventHandler(updateDispatchTimer_Tick);
-            this.updateDispatchTimer.Interval = new TimeSpan(0, 0, 1);
-            this.updateDispatchTimer.Start();
+            ICollectionView view = CollectionViewSource.GetDefaultView(lstHosts.ItemsSource);
+            view.GroupDescriptions.Add(new PropertyGroupDescription("GroupName"));
+            view.SortDescriptions.Add(new SortDescription("GroupName", ListSortDirection.Ascending));
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) {
             
-        }
-
-        private void pingDispatchTimer_Tick(object sender, EventArgs e) {
-            System.Diagnostics.Debug.WriteLine("MainWindow.pingDispatchTimer_Tick()");
-            if (!this.IsPaused) {
-                this.HostsManager.PingHosts();
-            }
-        }
-
-        private void updateDispatchTimer_Tick(object sender, EventArgs e) {
-            System.Diagnostics.Debug.WriteLine("MainWindow.updateDispatchTimer_Tick()");
-            foreach (BasicHost host in this.HostsManager.Hosts) {
-                host.OnPropertyChanged(new PropertyChangedEventArgs("Status"));
-            }
-            //lstHosts.Items.Refresh();
         }
 
         private void txtNewAddress_KeyUp(object sender, KeyEventArgs e) {
@@ -195,6 +149,36 @@ namespace Sting {
             System.Diagnostics.Debug.WriteLine("MainWindow.btnRemoveHost_Click()");
             BasicHost host = (BasicHost)(((Button)sender).DataContext);
             this.HostsManager.RemoveHost(host);
+        }
+
+        private void btnOpenVnc_Click(object sender, RoutedEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("MainWindow.btnOpenVnc_Click()");
+            BasicHost host = (BasicHost)(((Button)sender).DataContext);
+        }
+
+        private void btnOpenTelnet_Click(object sender, RoutedEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("MainWindow.btnOpenTelnet_Click()");
+            BasicHost host = (BasicHost)(((Button)sender).DataContext);
+        }
+
+        private void btnOpenWeb_Click(object sender, RoutedEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("MainWindow.btnOpenWeb_Click()");
+            BasicHost host = (BasicHost)(((Button)sender).DataContext);
+        }
+
+        private void btnOpenWeb_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("MainWindow.btnOpenWeb_MouseRightButtonUp()");
+            BasicHost host = (BasicHost)(((Button)sender).DataContext);
+        }
+
+        private void btnOpenTelnet_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("MainWindow.btnOpenTelnet_MouseRightButtonUp()");
+            BasicHost host = (BasicHost)(((Button)sender).DataContext);
+        }
+
+        private void btnOpenVnc_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("MainWindow.btnOpenVnc_MouseRightButtonUp()");
+            BasicHost host = (BasicHost)(((Button)sender).DataContext);
         }
 
     }

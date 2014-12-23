@@ -17,11 +17,18 @@
 -->
     
     <Window x:Class="Sting.MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:local="clr-namespace:Sting.Windows"
-        Icon="../Images/lighting_icon.png"
-        Title="Sting" Height="350" Width="525" Loaded="Window_Loaded" MinWidth="525" MinHeight="350" Closing="Window_Closing">
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:local="clr-namespace:Sting.Windows"
+            xmlns:system="clr-namespace:System;assembly=mscorlib"
+            Icon="../Images/lighting_icon.png"
+            Title="Sting" 
+            Height="350" 
+            Width="525" 
+            Loaded="Window_Loaded" 
+            MinWidth="525" 
+            MinHeight="350" 
+            Closing="Window_Closing">
     <Window.Resources>
         <DrawingImage x:Key="ResumeImage">
             <DrawingImage.Drawing>
@@ -205,6 +212,38 @@
                 </DrawingGroup>
             </DrawingImage.Drawing>
         </DrawingImage>
+        <ControlTemplate x:Key="ExpanderWithoutButton" TargetType="{x:Type Expander}">
+            <Border BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    Background="{TemplateBinding Background}"
+                    CornerRadius="3"
+                    SnapsToDevicePixels="true">
+                <DockPanel>
+                    <ContentPresenter
+                            Content="{TemplateBinding Header}"
+                            ContentTemplate="{TemplateBinding HeaderTemplate}"
+                            ContentTemplateSelector="{TemplateBinding HeaderTemplateSelector}"
+                            DockPanel.Dock="Top"
+                            Margin="1"
+                            Focusable="false" />
+                    <ContentPresenter
+                            x:Name="ExpandSite"
+                            Visibility="Collapsed"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            Margin="{TemplateBinding Padding}"
+                            Focusable="false" />
+                </DockPanel>
+            </Border>
+            <ControlTemplate.Triggers>
+                <Trigger Property="IsExpanded" Value="true">
+                    <Setter Property="Visibility" Value="Visible" TargetName="ExpandSite"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="false">
+                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                </Trigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
     </Window.Resources>
     <DockPanel>
         <ToolBar x:Name="tbMain" DockPanel.Dock="Top" ToolBarTray.IsLocked="True" Loaded="tbMain_Loaded">
@@ -258,11 +297,11 @@
                     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
                     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
                     <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent" />
-                    <Style TargetType="{x:Type GroupItem}" x:Name="SiteGroupContainerStyle">
+                    <Style x:Key="SiteGroupContainerStyle" TargetType="{x:Type GroupItem}">
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate>
-                                    <Expander IsExpanded="False" >
+                                    <Expander IsExpanded="True" >
                                         <Expander.Header>
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="Gray" FontSize="22" VerticalAlignment="Bottom" />
@@ -276,7 +315,7 @@
                             </Setter.Value>
                         </Setter>
                     </Style>
-                    <Style TargetType="{x:Type GroupItem}" x:Name="DefaultGroupContainerStyle">
+                    <Style x:Key="DefaultGroupContainerStyle" TargetType="{x:Type GroupItem}">
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate>
@@ -285,16 +324,14 @@
                             </Setter.Value>
                         </Setter>
                     </Style>
-
                 </ListBox.Resources>
 
                 <ListBox.GroupStyle>
                     <GroupStyle>
                         <GroupStyle.ContainerStyleSelector>
-                            <local:SiteGroupStyleSelector DefaultStyle="{StaticResource DefaultGroupContainerStyle}" SiteGroupStyle="{StaticResource SiteGroupContainerStyle}"></local:SiteGroupStyleSelector>
+                            <local:SiteGroupStyleSelector DefaultStyle="{StaticResource DefaultGroupContainerStyle}" 
+                                                          SiteGroupStyle="{StaticResource SiteGroupContainerStyle}"></local:SiteGroupStyleSelector>
                         </GroupStyle.ContainerStyleSelector>
-
-
                     </GroupStyle>
                 </ListBox.GroupStyle>
 
@@ -354,15 +391,15 @@
                                         <ColumnDefinition Width="*"></ColumnDefinition>
                                         <ColumnDefinition Width="25"></ColumnDefinition>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Row="0" 
-                                           Grid.Column="0" 
-                                           Grid.ColumnSpan="2" 
-                                           HorizontalAlignment="Left" 
-                                           Text="{Binding Path=Title}"
-                                           FontSize="20"
-                                           FontWeight="Bold"
-                                           ToolTip="{Binding Path=Title}"
-                                           TextTrimming="CharacterEllipsis"></TextBlock>
+                                    <local:ShowToolTipOnOverflowTextBox Grid.Row="0" 
+                                                                        Grid.Column="0" 
+                                                                        Grid.ColumnSpan="2" 
+                                                                        HorizontalAlignment="Left" 
+                                                                        Text="{Binding Path=Title}"
+                                                                        FontSize="20"
+                                                                        FontWeight="Bold"
+                                                                        ToolTip="{Binding Path=Title}"
+                                                                        TextTrimming="CharacterEllipsis"></local:ShowToolTipOnOverflowTextBox>
                                     <Button x:Name="btnRemoveHost"
                                             Height="20" 
                                             Width="20"
@@ -480,7 +517,19 @@
                                                FontSize="12"
                                                FontWeight="Light"
                                                FontStyle="Italic"
-                                               Text="{Binding Path=Details}"></TextBlock>
+                                               Text="{Binding Path=Details}"
+                                               ToolTip="{Binding Path=DetailsTooltip}"
+                                               ToolTipService.ShowDuration="1200000">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Style.Triggers>
+                                                    <Trigger Property="ToolTip" Value="{x:Static system:String.Empty}">
+                                                        <Setter Property="ToolTipService.IsEnabled" Value="False" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                     <Button x:Name="btnPauseHost" 
                                         Grid.Row="0"
                                         Grid.Column="1" 
@@ -536,7 +585,9 @@
                                         <Button x:Name="btnOpenVnc"
                                                 Height="20" 
                                                 Width="20"
-                                                Margin="2,0">
+                                                Margin="2,0" 
+                                                Click="btnOpenVnc_Click" 
+                                                MouseRightButtonUp="btnOpenVnc_MouseRightButtonUp">
                                             <Button.Template>
                                                 <ControlTemplate TargetType="Button">
                                                     <ControlTemplate.Triggers>
@@ -560,7 +611,9 @@
                                         <Button x:Name="btnOpenTelnet"
                                                 Height="20" 
                                                 Width="20"
-                                                Margin="2,0">
+                                                Margin="2,0" 
+                                                Click="btnOpenTelnet_Click" 
+                                                MouseRightButtonUp="btnOpenTelnet_MouseRightButtonUp">
                                             <Button.Template>
                                                 <ControlTemplate TargetType="Button">
                                                     <ControlTemplate.Triggers>
@@ -584,7 +637,9 @@
                                         <Button x:Name="btnOpenWeb"
                                                 Height="20" 
                                                 Width="20"
-                                                Margin="2,0">
+                                                Margin="2,0" 
+                                                MouseRightButtonUp="btnOpenWeb_MouseRightButtonUp" 
+                                                Click="btnOpenWeb_Click">
                                             <Button.Template>
                                                 <ControlTemplate TargetType="Button">
                                                     <ControlTemplate.Triggers>

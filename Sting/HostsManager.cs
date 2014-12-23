@@ -16,6 +16,7 @@ using Sting.HostProvider;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
@@ -29,11 +30,40 @@ namespace Sting {
 
     }
 
-    public class HostsManager {
+    public class HostsManager : INotifyPropertyChanged {
 
-        ObservableCollection<BasicHost> hosts = new ObservableCollection<BasicHost>();
+        private ObservableCollection<BasicHost> hosts = new ObservableCollection<BasicHost>();
 
-        List<IHostProvider> hostProviders = new List<IHostProvider>();
+        private List<IHostProvider> hostProviders = new List<IHostProvider>();
+
+        private int pingInterval = 1;
+
+        private Boolean paused = false;
+
+        public Boolean IsPaused {
+            get {
+                return this.paused;
+            }
+            set {
+                this.paused = value;
+                this.OnPropertyChanged("IsPaused");
+
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(string name) {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null) {
+                handler(this, new PropertyChangedEventArgs(name));
+            }
+        }
+
+        private static int[] PING_INTERVALS = new int[] { 1, 2, 3, 5, 10, 15, 30, 60 };
+
+        private System.Windows.Threading.DispatcherTimer pingDispatchTimer = new System.Windows.Threading.DispatcherTimer();
+        private System.Windows.Threading.DispatcherTimer updateDispatchTimer = new System.Windows.Threading.DispatcherTimer();
 
         public ObservableCollection<BasicHost> Hosts {
             get {
@@ -42,6 +72,13 @@ namespace Sting {
         }
 
         public HostsManager() {
+            this.IsPaused = false;
+
+            this.pingDispatchTimer.Tick += new EventHandler(pingDispatchTimer_Tick);
+            this.pingDispatchTimer.Interval = new TimeSpan(0, 0, this.pingInterval);
+            this.updateDispatchTimer.Tick += new EventHandler(updateDispatchTimer_Tick);
+            this.updateDispatchTimer.Interval = new TimeSpan(0, 0, 1);
+
             hostProviders.Add(new IPHostProvider());
             hostProviders.Add(new SpecialSubNetHostProvider());
             hostProviders.Add(new DnsHostProvider());
@@ -54,7 +91,12 @@ namespace Sting {
                         try {
                             BasicHost host = hostProvider.Host(value);
                             mainWindow.Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, new Action(() => {
+                                if (hosts.Count == 0) {
+                                    this.updateDispatchTimer.Start();
+                                    this.pingDispatchTimer.Start();
+                                }
                                 hosts.Add(host);
+                                host.Ping().Start();
                             }));
                             return;
                         } catch (Exception e) {
@@ -71,13 +113,24 @@ namespace Sting {
         public void RemoveHost(BasicHost host) {
             host.RemoveHost();
             hosts.Remove(host);
+            if (hosts.Count == 0) {
+                this.updateDispatchTimer.Stop();
+                this.pingDispatchTimer.Stop();
+            }
         }
 
         public void RemoveAllHost() {
             foreach (BasicHost host in this.hosts) {
                 host.RemoveHost();
             }
+            this.updateDispatchTimer.Stop();
+            this.pingDispatchTimer.Stop();
             hosts.Clear();
+        }
+
+        public void SetPingInterval(int index) {
+            pingInterval = PING_INTERVALS[index];
+            this.pingDispatchTimer.Interval = new TimeSpan(0, 0, this.pingInterval);
         }
 
         public void ToggleHostPause(BasicHost host) {
@@ -88,15 +141,39 @@ namespace Sting {
             }
         }
 
+        public void ToggleAllHostsPause() {
+            System.Diagnostics.Debug.WriteLine("HostsManager.btnPauseAll_Click()");
+            if (!this.IsPaused) {
+                this.IsPaused = true;
+                this.pingDispatchTimer.Stop();
+                this.updateDispatchTimer.Stop();
+            } else {
+                this.IsPaused = false;
+                this.pingDispatchTimer.Start();
+                this.updateDispatchTimer.Start();
+            }
+        }
+
         public void PingHosts() {
             Task.Run(() => {
                 foreach (BasicHost host in this.hosts) {
-                    if (!host.IsPaused) {
-                        System.Diagnostics.Debug.WriteLine("Sent Ping to " + host.IPAddress.ToString());
-                        host.Ping().Start();
-                    }
+                    host.Ping().Start();
                 }
             });
+        }
+
+        private void pingDispatchTimer_Tick(object sender, EventArgs e) {
+            System.Diagnostics.Debug.WriteLine("HostManager.pingDispatchTimer_Tick()");
+            if (!this.IsPaused) {
+                this.PingHosts();
+            }
+        }
+
+        private void updateDispatchTimer_Tick(object sender, EventArgs e) {
+            System.Diagnostics.Debug.WriteLine("HostManager.updateDispatchTimer_Tick()");
+            foreach (BasicHost host in this.Hosts) {
+                host.OnPropertyChanged(new PropertyChangedEventArgs("Status"));
+            }
         }
 
     }
