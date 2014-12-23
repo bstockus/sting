@@ -21,19 +21,21 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Sting.Host {
-    public abstract class BasicHost : IPingableHost, IDisplayableHost, IControllableHost, IRemovableHost, INotifyPropertyChanged {
+    public abstract class BasicHost : IPingableHost, IDisplayableHost, IControllableHost, IRemovableHost, INotifyPropertyChanged, IGroupableHost {
 
-        private static int BAD_PING_ATTEMPTS_ALLOWED_BEFORE_DOWN = 4;
+        private static TimeSpan BAD_PING_STREAK_TIMEOUT = new TimeSpan(0, 0, 10);
 
         private IPAddress ipAddress;
         protected Boolean paused;
         protected Boolean hostUp;
         protected String status;
         protected String details;
+        protected String groupName = "";
         private String guid;
 
         private DateTime lastStatusChangeTime = DateTime.Now;
-        private int badPingAttemptCounter = 0;
+        private DateTime firstBadPingTime = DateTime.Now;
+        private Boolean isInBadPingStreak = false;
 
         private List<Tuple<DateTime, PingReply>> pingReplyHistory = new List<Tuple<DateTime, PingReply>>();
 
@@ -45,6 +47,12 @@ namespace Sting.Host {
         public string GUID {
             get {
                 return this.guid;
+            }
+        }
+
+        public string GroupName {
+            get {
+                return this.groupName;
             }
         }
 
@@ -73,7 +81,7 @@ namespace Sting.Host {
 
         public string Details {
             get {
-                if (!this.IsPaused && this.hostUp) {
+                if (!this.IsPaused) {
                     return this.details;
                 } else {
                     return "";
@@ -110,6 +118,7 @@ namespace Sting.Host {
         public void UnPause() {
             this.paused = false;
             this.lastStatusChangeTime = DateTime.Now;
+            this.isInBadPingStreak = false;
             this.OnPropertyChanged(new PropertyChangedEventArgs("IsPaused"));
             this.OnPropertyChanged(new PropertyChangedEventArgs("Details"));
             this.OnPropertyChanged(new PropertyChangedEventArgs("Status"));
@@ -150,28 +159,39 @@ namespace Sting.Host {
 
                 this.pingReplyHistory.Add(new Tuple<DateTime, PingReply>(DateTime.Now, reply));
 
-                this.details = this.CalculateLatencyAverage();
-                this.OnPropertyChanged(new PropertyChangedEventArgs("Details"));
-
                 if (reply.Status == IPStatus.Success) {
+                    if (this.isInBadPingStreak) {
+                        this.isInBadPingStreak = false;
+                    }
                     if (!this.hostUp) {
                         this.lastStatusChangeTime = DateTime.Now;
                         this.hostUp = true;
                         NotificationManager.GetNotificationManager().Notify(this.Title, "Host is Up!", "green_up_arrow.png");
                         this.OnPropertyChanged(new PropertyChangedEventArgs("IsHostUp"));
                     }
-                    this.badPingAttemptCounter = 0;
                     System.Diagnostics.Debug.WriteLine("Good Ping from " + this.IPAddress.ToString());
+                    
                 } else {
-                    this.badPingAttemptCounter++;
-                    if (this.badPingAttemptCounter >= BAD_PING_ATTEMPTS_ALLOWED_BEFORE_DOWN && this.hostUp) {
-                        this.lastStatusChangeTime = DateTime.Now;
-                        this.hostUp = false;
-                        NotificationManager.GetNotificationManager().Notify(this.Title, "Host is Down!", "red_down_arrow.png");
-                        this.OnPropertyChanged(new PropertyChangedEventArgs("IsHostUp"));
+                    if (this.IsHostUp) {
+                        if (!this.isInBadPingStreak) {
+                            this.isInBadPingStreak = true;
+                            this.firstBadPingTime = DateTime.Now;
+                        } else if (DateTime.Now - this.firstBadPingTime > BAD_PING_STREAK_TIMEOUT) {
+                            this.lastStatusChangeTime = DateTime.Now;
+                            this.hostUp = false;
+                            NotificationManager.GetNotificationManager().Notify(this.Title, "Host is Down!", "red_down_arrow.png");
+                            this.OnPropertyChanged(new PropertyChangedEventArgs("IsHostUp"));
+                        }
                     }
                     System.Diagnostics.Debug.WriteLine("Bad Ping from " + this.IPAddress.ToString());
                 }
+
+                if (!this.IsHostUp) {
+                    this.details = this.GetHostDownReason();
+                } else {
+                    this.details = this.CalculateLatencyAverage();
+                }
+                this.OnPropertyChanged(new PropertyChangedEventArgs("Details"));
 
             });
             return task;

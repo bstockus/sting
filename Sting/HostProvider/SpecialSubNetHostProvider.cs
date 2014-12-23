@@ -15,18 +15,25 @@ namespace Sting.HostProvider {
             string siteValue = value.Substring(1, 3);
             string hostValue = value.Substring(4);
 
-            IPAddress siteAddress;
-
-            if (hostsCache.ContainsKey(siteValue)) {
-                siteAddress = hostsCache[siteValue];
+            int _tempIntValue;
+            IPAddress hostAddress;
+            if (!int.TryParse(hostValue, out _tempIntValue)) {
+                hostAddress = DnsService.Lookup(value);
             } else {
-                siteAddress = DnsService.Lookup(siteValue + "str");
-                hostsCache.Add(siteValue, siteAddress);
-            }
+                IPAddress siteAddress;
+                if (hostsCache.ContainsKey(siteValue)) {
+                    siteAddress = hostsCache[siteValue];
+                } else {
+                    siteAddress = DnsService.Lookup(siteValue + "str");
+                    hostsCache.Add(siteValue, siteAddress);
+                }
 
-            byte[] siteAddressBytes = siteAddress.GetAddressBytes();
-            siteAddressBytes[3] = byte.Parse(hostValue);
-            return new DnsBasicHost(new IPAddress(siteAddressBytes), siteValue + "/" + hostValue);
+                byte[] siteAddressBytes = siteAddress.GetAddressBytes();
+                siteAddressBytes[3] = byte.Parse(hostValue);
+                hostAddress = new IPAddress(siteAddressBytes);
+            }
+            
+            return new DnsBasicHost(hostAddress, siteValue + "/" + hostValue);
         }
 
         public bool ValidHostValue(string value) {
