@@ -40,6 +40,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <GenerateSerializationAssemblies>On</GenerateSerializationAssemblies>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -67,6 +68,7 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Xml.Serialization" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -76,6 +78,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="ConfigFileHelper.cs" />
+    <Compile Include="Host\IServicableHost.cs" />
+    <Compile Include="Host\ServiceGroupedDnsHost.cs" />
+    <Compile Include="ServicesManager.cs" />
+    <Compile Include="SettingsManager.cs" />
     <Compile Include="Windows\ShowToolTipOnOverflowTextBox.cs" />
     <Compile Include="Windows\SiteGroupStyleSelector.cs" />
     <Page Include="Graphic\pause.xaml">

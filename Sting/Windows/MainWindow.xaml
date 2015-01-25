@@ -586,8 +586,7 @@
                                                 Height="20" 
                                                 Width="20"
                                                 Margin="2,0" 
-                                                Click="btnOpenVnc_Click" 
-                                                MouseRightButtonUp="btnOpenVnc_MouseRightButtonUp">
+                                                Click="btnOpenVnc_Click">
                                             <Button.Template>
                                                 <ControlTemplate TargetType="Button">
                                                     <ControlTemplate.Triggers>
@@ -612,8 +611,7 @@
                                                 Height="20" 
                                                 Width="20"
                                                 Margin="2,0" 
-                                                Click="btnOpenTelnet_Click" 
-                                                MouseRightButtonUp="btnOpenTelnet_MouseRightButtonUp">
+                                                Click="btnOpenTelnet_Click">
                                             <Button.Template>
                                                 <ControlTemplate TargetType="Button">
                                                     <ControlTemplate.Triggers>
@@ -629,6 +627,9 @@
                                                         <DataTrigger Binding="{Binding IsShellServiceAvailable}" Value="True">
                                                             <Setter Property="Button.Visibility" Value="Visible"></Setter>
                                                         </DataTrigger>
+                                                        <DataTrigger Binding="{Binding IsShellMenuAvailable}" Value="True">
+                                                            <Setter Property="Button.ContextMenu" Value="{Binding ShellContextMenu}"></Setter>
+                                                        </DataTrigger>
                                                     </ControlTemplate.Triggers>
                                                     <Image Source="../Images/shell_icon.png" x:Name="img"></Image>
                                                 </ControlTemplate>
@@ -637,8 +638,7 @@
                                         <Button x:Name="btnOpenWeb"
                                                 Height="20" 
                                                 Width="20"
-                                                Margin="2,0" 
-                                                MouseRightButtonUp="btnOpenWeb_MouseRightButtonUp" 
+                                                Margin="2,0"
                                                 Click="btnOpenWeb_Click">
                                             <Button.Template>
                                                 <ControlTemplate TargetType="Button">
@@ -654,6 +654,9 @@
                                                         </DataTrigger>
                                                         <DataTrigger Binding="{Binding IsWebServiceAvailable}" Value="True">
                                                             <Setter Property="Button.Visibility" Value="Visible"></Setter>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding IsWebMenuAvailable}" Value="True">
+                                                            <Setter Property="Button.ContextMenu" Value="{Binding WebContextMenu}"></Setter>
                                                         </DataTrigger>
                                                     </ControlTemplate.Triggers>
                                                     <Image Source="../Images/browser_icon.png" x:Name="img"></Image>

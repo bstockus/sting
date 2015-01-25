@@ -99,6 +99,8 @@ namespace Sting {
                                 host.Ping().Start();
                             }));
                             return;
+                        } catch (BasicHostAllReadyExistsException e) {
+                            return;
                         } catch (Exception e) {
                             System.Diagnostics.Debug.WriteLine(e.ToString());
                         }
@@ -120,11 +122,11 @@ namespace Sting {
         }
 
         public void RemoveAllHost() {
+            this.updateDispatchTimer.Stop();
+            this.pingDispatchTimer.Stop();
             foreach (BasicHost host in this.hosts) {
                 host.RemoveHost();
             }
-            this.updateDispatchTimer.Stop();
-            this.pingDispatchTimer.Stop();
             hosts.Clear();
         }
 
@@ -149,8 +151,10 @@ namespace Sting {
                 this.updateDispatchTimer.Stop();
             } else {
                 this.IsPaused = false;
-                this.pingDispatchTimer.Start();
-                this.updateDispatchTimer.Start();
+                if (this.Hosts.Count > 0) {
+                    this.pingDispatchTimer.Start();
+                    this.updateDispatchTimer.Start();
+                }
             }
         }
 

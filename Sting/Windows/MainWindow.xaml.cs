@@ -59,7 +59,7 @@ namespace Sting {
         private void btnPauseAll_Click(object sender, RoutedEventArgs e) {
             System.Diagnostics.Debug.WriteLine("MainWindow.btnPauseAll_Click()");
             this.HostsManager.ToggleAllHostsPause();
-            if (!this.HostsManager.IsPaused) {
+            if (this.HostsManager.IsPaused) {
                 string packUri = "pack://application:,,,/Sting;component/Images/playback_play_icon.png";
                 btnPauseAll_img.Source = new ImageSourceConverter().ConvertFromString(packUri) as ImageSource;
                 lstHosts.Effect = new BlurEffect();
@@ -153,32 +153,30 @@ namespace Sting {
 
         private void btnOpenVnc_Click(object sender, RoutedEventArgs e) {
             System.Diagnostics.Debug.WriteLine("MainWindow.btnOpenVnc_Click()");
-            BasicHost host = (BasicHost)(((Button)sender).DataContext);
+            IServicableHost host = (IServicableHost)(((Button)sender).DataContext);
+            host.PerformVncService();
         }
 
         private void btnOpenTelnet_Click(object sender, RoutedEventArgs e) {
             System.Diagnostics.Debug.WriteLine("MainWindow.btnOpenTelnet_Click()");
-            BasicHost host = (BasicHost)(((Button)sender).DataContext);
+            Button button = (Button)sender;
+            IServicableHost host = (IServicableHost)(button.DataContext);
+            if (((BasicHost)host).IsShellMenuAvailable) {
+                button.ContextMenu.IsOpen = true;
+            } else {
+                host.PerformShellService();
+            }
         }
 
         private void btnOpenWeb_Click(object sender, RoutedEventArgs e) {
             System.Diagnostics.Debug.WriteLine("MainWindow.btnOpenWeb_Click()");
-            BasicHost host = (BasicHost)(((Button)sender).DataContext);
-        }
-
-        private void btnOpenWeb_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
-            System.Diagnostics.Debug.WriteLine("MainWindow.btnOpenWeb_MouseRightButtonUp()");
-            BasicHost host = (BasicHost)(((Button)sender).DataContext);
-        }
-
-        private void btnOpenTelnet_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
-            System.Diagnostics.Debug.WriteLine("MainWindow.btnOpenTelnet_MouseRightButtonUp()");
-            BasicHost host = (BasicHost)(((Button)sender).DataContext);
-        }
-
-        private void btnOpenVnc_MouseRightButtonUp(object sender, MouseButtonEventArgs e) {
-            System.Diagnostics.Debug.WriteLine("MainWindow.btnOpenVnc_MouseRightButtonUp()");
-            BasicHost host = (BasicHost)(((Button)sender).DataContext);
+            Button button = (Button)sender;
+            IServicableHost host = (IServicableHost)(button.DataContext);
+            if (((BasicHost)host).IsWebMenuAvailable) {
+                button.ContextMenu.IsOpen = true;
+            } else {
+                host.PerformWebService();
+            }
         }
 
     }

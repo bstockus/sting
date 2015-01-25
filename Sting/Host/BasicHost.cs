@@ -21,9 +21,20 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Sting.Host {
+
+    public class BasicHostAllReadyExistsException : Exception {
+
+    }
+
     public abstract class BasicHost : IPingableHost, IDisplayableHost, IControllableHost, IRemovableHost, INotifyPropertyChanged, IGroupableHost {
 
-        private static TimeSpan BAD_PING_STREAK_TIMEOUT = new TimeSpan(0, 0, 10);
+        private static List<IPAddress> currentHostIPAddresses = new List<IPAddress>();
+
+        private static TimeSpan BAD_PING_STREAK_TIMEOUT {
+            get {
+                return new TimeSpan(0, 0, SettingsManager.GetSettings().BadPingStreakBeforeHostIsDown);
+            }
+        }
 
         private IPAddress ipAddress;
         protected Boolean paused;
@@ -41,9 +52,22 @@ namespace Sting.Host {
 
         private List<Tuple<DateTime, PingReply>> pingReplyHistory = new List<Tuple<DateTime, PingReply>>();
 
+        protected Boolean vncServiceAvailable = false;
+        protected Boolean shellServiceAvailable = false;
+        protected Boolean webServiceAvailable = false;
+
+        protected Boolean shellMenuAvailable = false;
+        protected Boolean webMenuAvailable = false;
+
         public BasicHost(IPAddress ipAddress) {
-            this.ipAddress = ipAddress;
-            this.guid = Guid.NewGuid().ToString();
+            if (BasicHost.currentHostIPAddresses.Contains(ipAddress)) {
+                System.Diagnostics.Debug.WriteLine("Currently a host open with the IP Address: " + ipAddress.ToString());
+                throw new BasicHostAllReadyExistsException();
+            } else {
+                BasicHost.currentHostIPAddresses.Add(ipAddress);
+                this.ipAddress = ipAddress;
+                this.guid = Guid.NewGuid().ToString();
+            }
         }
 
         public string GUID {
@@ -61,6 +85,12 @@ namespace Sting.Host {
         public abstract string Title { get; }
 
         public abstract string SubTitle { get; }
+
+        public virtual string NotificationTitle {
+            get {
+                return this.Title;
+            }
+        }
 
         public string Status {
             get {
@@ -138,24 +168,36 @@ namespace Sting.Host {
 
         public Boolean IsVncServiceAvailable {
             get {
-                return true;
+                return this.vncServiceAvailable && ServicesManager.GetServicesManager().IsVncServiceAvailable;
             }
         }
 
         public Boolean IsShellServiceAvailable {
             get {
-                return true;
+                return this.shellServiceAvailable && ServicesManager.GetServicesManager().IsShellServiceAvailable;
             }
         }
 
         public Boolean IsWebServiceAvailable {
             get {
-                return true;
+                return this.webServiceAvailable && ServicesManager.GetServicesManager().IsWebServiceAvailable;
+            }
+        }
+
+        public Boolean IsShellMenuAvailable {
+            get {
+                return this.shellMenuAvailable && this.IsShellServiceAvailable;
+            }
+        }
+
+        public Boolean IsWebMenuAvailable {
+            get {
+                return this.webMenuAvailable && this.IsWebServiceAvailable;
             }
         }
 
         public void RemoveHost() {
-            // Nothing to do at this point
+            BasicHost.currentHostIPAddresses.Remove(this.ipAddress);
         }
 
         public Task Ping() {
@@ -187,7 +229,7 @@ namespace Sting.Host {
                 if (!this.hostUp) {
                     this.lastStatusChangeTime = DateTime.Now;
                     this.hostUp = true;
-                    NotificationManager.GetNotificationManager().Notify(this.Title, "Host is Up!", "green_up_arrow.png");
+                    NotificationManager.GetNotificationManager().Notify(this.NotificationTitle, "Host is Up!", "green_up_arrow.png");
                     this.OnPropertyChanged(new PropertyChangedEventArgs("IsHostUp"));
                 }
                 System.Diagnostics.Debug.WriteLine("Good Ping from " + this.IPAddress.ToString());
@@ -200,7 +242,7 @@ namespace Sting.Host {
                     } else if (DateTime.Now - this.firstBadPingTime > BAD_PING_STREAK_TIMEOUT) {
                         this.lastStatusChangeTime = DateTime.Now;
                         this.hostUp = false;
-                        NotificationManager.GetNotificationManager().Notify(this.Title, "Host is Down!", "red_down_arrow.png");
+                        NotificationManager.GetNotificationManager().Notify(this.NotificationTitle, "Host is Down!", "red_down_arrow.png");
                         this.OnPropertyChanged(new PropertyChangedEventArgs("IsHostUp"));
                     }
                 }
@@ -215,45 +257,129 @@ namespace Sting.Host {
             
         }
 
+
+        private static Boolean[] IsInTimeSpans(DateTime[] timeSpans, DateTime dateTime) {
+            Boolean[] results = new Boolean[timeSpans.Length];
+            for (int index = 0; index < timeSpans.Length; index++) {
+                if (dateTime > timeSpans[index]) {
+                    results[index] = true;
+                } else {
+                    results[index] = false;
+                }
+            }
+            return results;
+        }
+
+        private static int[] AddValueIfInTimeSpan(Boolean[] bools, int[] inputs, int value) {
+            int[] results = inputs;
+            for (int index = 0; index < bools.Length; index++) {
+                if (bools[index]) {
+                    results[index] += value;
+                }
+            }
+            return results;
+        }
+
+        private static int[] SetValueIfInTimeSpanAndMax(Boolean[] bools, int[] inputs, int value) {
+            int[] results = inputs;
+            for (int index = 0; index < bools.Length; index++) {
+                if (bools[index] && value > inputs[index]) {
+                    results[index] = value;
+                }
+            }
+            return results;
+        }
+
+        private static int[] SetValueIfInTimeSpanAndMin(Boolean[] bools, int[] inputs, int value) {
+            int[] results = inputs;
+            for (int index = 0; index < bools.Length; index++) {
+                if (bools[index] && value < inputs[index]) {
+                    results[index] = value;
+                }
+            }
+            return results;
+        }
+
         private void UpdateDetailsForHostUp() {
+
             DateTime minuteAgo = DateTime.Now - new TimeSpan(0, 1, 0);
             DateTime fiveMinutesAgo = DateTime.Now - new TimeSpan(0, 5, 0);
-            var lastMinutePingReplys = from tuple in this.pingReplyHistory
-                                       where tuple.Item1 > minuteAgo
-                                       select tuple.Item2;
-            int sum = 0;
-            int count = 0;
-            int max = 0;
-            int min = 0;
+            DateTime tenMinutesAgo = DateTime.Now - new TimeSpan(0, 10, 0);
+            var lastTenMinutesPingReplys = from tuple in this.pingReplyHistory
+                                       where tuple.Item1 > tenMinutesAgo
+                                       select tuple;
 
-            int totalPings = 0;
-            int badPings = 0;
+            DateTime[] agos = new DateTime[] { minuteAgo, fiveMinutesAgo, tenMinutesAgo };
+
+            int[] latencySums = new int[] { 0, 0, 0 };
+            int[] maxLatencys = new int[] { 0, 0, 0 };
+            int[] minLatencys = new int[] { 0, 0, 0 };
+
+            int[] totalPings = new int[] { 0, 0, 0 };
+            int[] badPings = new int[] { 0, 0, 0 };
 
             Boolean first = true;
-            foreach (PingReply pingReply in lastMinutePingReplys) {
-                totalPings++;
-                if (pingReply.Status == IPStatus.Success) {
-                    int rtTime = (int)pingReply.RoundtripTime;
+            foreach (var tuple in lastTenMinutesPingReplys) {
+                Boolean[] inTimeSpans = IsInTimeSpans(agos, tuple.Item1);
+                totalPings = AddValueIfInTimeSpan(inTimeSpans, totalPings, 1);
+
+                if (tuple.Item2.Status == IPStatus.Success) {
+                    int rtTime = (int)tuple.Item2.RoundtripTime;
                     if (first) {
-                        min = rtTime;
+                        minLatencys = AddValueIfInTimeSpan(inTimeSpans, minLatencys, rtTime);
                         first = false;
                     }
-                    if (rtTime < min) min = rtTime;
-                    if (rtTime > max) max = rtTime;
-                    sum += rtTime;
-                    count++;
+                    maxLatencys = SetValueIfInTimeSpanAndMax(inTimeSpans, maxLatencys, rtTime);
+                    minLatencys = SetValueIfInTimeSpanAndMin(inTimeSpans, minLatencys, rtTime);
+                    latencySums = AddValueIfInTimeSpan(inTimeSpans, latencySums, rtTime);
                 } else {
-                    badPings++;
+                    badPings = AddValueIfInTimeSpan(inTimeSpans, badPings, 1);
                 }
             }
 
-            float badPingPercentage = ((float)badPings / (float)totalPings) * 100.0f;
+            String lastMinuteAverageLatency = (latencySums[0] / (totalPings[0] - badPings[0])).ToString();
+            String lastFiveMinutesAverageLatency = (latencySums[1] / (totalPings[1] - badPings[1])).ToString();
+            String lastTenMinutesAverageLatency = (latencySums[2] / (totalPings[2] - badPings[2])).ToString();
 
-            this.details = (sum / count).ToString() + "ms";
-            this.detailsTooltip = "Min = " + min.ToString() + "ms, Max = " + max.ToString() + "ms" + System.Environment.NewLine
-                + "Bad Pings = " + badPings.ToString() + "/" + totalPings.ToString() + " (" + badPingPercentage.ToString("F2") + "%)";
+            String lastMinuteMaxLatency = maxLatencys[0].ToString();
+            String lastFivMinutesMaxLatency = maxLatencys[1].ToString();
+            String lastTenMinutesMaxLatency = maxLatencys[2].ToString();
+
+            String badPingsTooltip = "";
+            if (badPings[0] > 0) {
+                String lastMinuteBadPings = ((float)badPings[0] / (float)totalPings[0]).ToString("F2");
+                String lastFiveMinutesBadPings = ((float)badPings[1] / (float)totalPings[1]).ToString("F2");
+                String lastTenMinutesBadPings = ((float)badPings[2] / (float)totalPings[2]).ToString("F2");
+
+                badPingsTooltip = System.Environment.NewLine + "Bad = ";
+
+                if (totalPings[2] > totalPings[1]) {
+                    badPingsTooltip += lastMinuteBadPings + "/" + lastFiveMinutesBadPings + "/" + lastTenMinutesBadPings;
+                } else if (totalPings[1] > totalPings[0]) {
+                    badPingsTooltip += lastMinuteBadPings + "/" + lastFiveMinutesBadPings;
+                } else {
+                    badPingsTooltip += lastMinuteBadPings;
+                }
+
+            }
+            
+            String maxLatenciesTooltip = "";
+            
+            if (totalPings[2] > totalPings[1]) {
+                this.details = lastMinuteAverageLatency + "/" + lastFiveMinutesAverageLatency + "/" + lastTenMinutesAverageLatency + "ms";
+                maxLatenciesTooltip = lastMinuteMaxLatency + "/" + lastFivMinutesMaxLatency + "/" + lastMinuteMaxLatency + "ms";
+            } else if (totalPings[1] > totalPings[0]) {
+                this.details = lastMinuteAverageLatency + "/" + lastFiveMinutesAverageLatency + "ms";
+                maxLatenciesTooltip = lastMinuteMaxLatency + "/" + lastFivMinutesMaxLatency + "ms";
+            } else {
+                this.details = lastMinuteAverageLatency +  "ms";
+                maxLatenciesTooltip = lastMinuteMaxLatency + "ms";
+            }
+
+            this.detailsTooltip = "Max = " + maxLatenciesTooltip + badPingsTooltip;
             this.OnPropertyChanged(new PropertyChangedEventArgs("Details"));
             this.OnPropertyChanged(new PropertyChangedEventArgs("DetailsTooltip"));
+
         }
 
         private void UpdateDetailsForHostDown() {
