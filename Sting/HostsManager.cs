@@ -40,6 +40,8 @@ namespace Sting {
 
         private Boolean paused = false;
 
+        private MainWindow mainWindow;
+
         public Boolean IsPaused {
             get {
                 return this.paused;
@@ -71,7 +73,8 @@ namespace Sting {
             }
         }
 
-        public HostsManager() {
+        public HostsManager(MainWindow mainWindow) {
+            this.mainWindow = mainWindow;
             this.IsPaused = false;
 
             this.pingDispatchTimer.Tick += new EventHandler(pingDispatchTimer_Tick);
@@ -81,34 +84,51 @@ namespace Sting {
 
             hostProviders.Add(new IPHostProvider());
             hostProviders.Add(new SpecialSubNetHostProvider());
+            hostProviders.Add(new HostGroupProvider());
             hostProviders.Add(new DnsHostProvider());
         }
 
-        public void AddHost(String value, MainWindow mainWindow) {
-            Task.Factory.StartNew(() => {
-                foreach (IHostProvider hostProvider in this.hostProviders) {
-                    if (hostProvider.ValidHostValue(value)) {
-                        try {
-                            BasicHost host = hostProvider.Host(value);
-                            mainWindow.Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, new Action(() => {
-                                if (hosts.Count == 0) {
-                                    this.updateDispatchTimer.Start();
-                                    this.pingDispatchTimer.Start();
-                                }
-                                hosts.Add(host);
-                                host.Ping().Start();
-                            }));
-                            return;
-                        } catch (BasicHostAllReadyExistsException e) {
-                            return;
-                        } catch (Exception e) {
-                            System.Diagnostics.Debug.WriteLine(e.ToString());
+        private readonly object addHostLock = new object();
+
+        public bool AddHost(String value) {
+            foreach (IHostProvider hostProvider in this.hostProviders) {
+                if (hostProvider.ValidHostValue(value)) {
+                    try {
+                        BasicHost host = hostProvider.Host(value, this);
+                        if (host != null) {
+                            System.Diagnostics.Debug.WriteLine("Check Lock: " + value);
+                            lock (addHostLock) {
+                                System.Diagnostics.Debug.WriteLine("Begin Lock: " + value);
+                                this.mainWindow.Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, new Action(() => {
+                                    if (hosts.Count == 0) {
+                                        this.updateDispatchTimer.Start();
+                                        this.pingDispatchTimer.Start();
+                                    }
+                                    hosts.Add(host);
+                                    host.Ping().Start();
+                                }));
+                                System.Diagnostics.Debug.WriteLine("End Lock: " + value);
+                            }
+                            System.Diagnostics.Debug.WriteLine("Done Lock: " + value);
                         }
+                        return true;
+                    } catch (BasicHostAllReadyExistsException e) {
+                        return true;
+                    } catch (Exception e) {
+                        System.Diagnostics.Debug.WriteLine(e.ToString());
                     }
                 }
-                mainWindow.Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, new Action(() => {
-                    MessageBox.Show(mainWindow, "Unable to find '" + value + "'", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                }));
+            }
+            return false;
+        }
+
+        public void AddHostWithErrorPopup(String value) {
+            Task.Factory.StartNew(() => {
+                if (!this.AddHost(value)) {
+                    this.mainWindow.Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, new Action(() => {
+                        MessageBox.Show(this.mainWindow, "Unable to find '" + value + "'", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }));
+                }
             });
         }
 

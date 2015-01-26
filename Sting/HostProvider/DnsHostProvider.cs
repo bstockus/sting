@@ -21,7 +21,7 @@ using System.Threading.Tasks;
 
 namespace Sting.HostProvider {
     public class DnsHostProvider : IHostProvider {
-        public Host.BasicHost Host(string value) {
+        public Host.BasicHost Host(string value, HostsManager hostsManager) {
             return new DnsBasicHost(DnsService.Lookup(value), value);
         }
 

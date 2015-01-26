@@ -72,7 +72,9 @@ namespace Sting.HostProvider {
             }
         }
 
-        public BasicHost Host(string value) {
+        private readonly object hostsCacheLock = new object();
+
+        public BasicHost Host(string value, HostsManager hostsManager) {
             string[] splits = value.Split('/');
             string siteValue = splits[0];
             string hostValue = splits[1];
@@ -87,11 +89,13 @@ namespace Sting.HostProvider {
                 hostAddress = DnsService.Lookup(siteValue + hostValue);
             } else {
                 IPAddress siteAddress;
-                if (hostsCache.ContainsKey(siteValue)) {
-                    siteAddress = hostsCache[siteValue];
-                } else {
-                    siteAddress = DnsService.Lookup(siteValue + specialHostsConfig.DefaultDnsLookupSuffix);
-                    hostsCache.Add(siteValue, siteAddress);
+                lock (hostsCacheLock) {
+                    if (hostsCache.ContainsKey(siteValue)) {
+                        siteAddress = hostsCache[siteValue];
+                    } else {
+                        siteAddress = DnsService.Lookup(siteValue + specialHostsConfig.DefaultDnsLookupSuffix);
+                        hostsCache.Add(siteValue, siteAddress);
+                    }
                 }
 
                 byte[] siteAddressBytes = siteAddress.GetAddressBytes();

@@ -22,7 +22,7 @@ using Sting.Host;
 namespace Sting.HostProvider {
     public class IPHostProvider : IHostProvider {
 
-        public BasicHost Host(string value) {
+        public BasicHost Host(string value, HostsManager hostsManager) {
             System.Diagnostics.Debug.WriteLine("IPHostProvider.Host()");
             return new IPBasicHost(IPAddress.Parse(value));
         }

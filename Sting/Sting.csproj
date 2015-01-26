@@ -79,6 +79,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ConfigFileHelper.cs" />
+    <Compile Include="HostProvider\HostGroupProvider.cs" />
     <Compile Include="Host\IServicableHost.cs" />
     <Compile Include="Host\ServiceGroupedDnsHost.cs" />
     <Compile Include="ServicesManager.cs" />

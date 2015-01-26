@@ -38,6 +38,9 @@ namespace Sting {
         [XmlAttribute]
         public String Port { get; set; }
 
+        [XmlAttribute]
+        public String Custom1 { get; set; }
+
     }
 
     [Serializable]
@@ -70,6 +73,7 @@ namespace Sting {
         private const string VNC_PORT_SUBSTITUTION_STRING = "%%%Port%%%";
         private const string VNC_USERNAME_SUBSTITUTION_STRING = "%%%UserName%%%";
         private const string VNC_PASSWORD_SUBSTITUTION_STRING = "%%%Password%%%";
+        private const string VNC_CUSTOM1_SUBSTITUTION_STRING = "%%%Custom1%%%";
 
         [Serializable]
         [XmlRoot("Services")]
@@ -81,6 +85,7 @@ namespace Sting {
                     this.DefaultPassword = "";
                     this.DefaultUserName = "";
                     this.DefaultPort = "";
+                    this.DefaultCustom1 = "";
                 }
 
                 public String Program { get; set; }
@@ -92,6 +97,7 @@ namespace Sting {
                 ///     %%%Port%%% for the Current Hosts Port Address
                 ///     %%%UserName%%% for the Current Hosts UserName
                 ///     %%%Password%%% for the Current Hosts Password
+                ///     %%%Custom1%%% for a custom value
                 /// </summary>
                 public String Arguments { get; set; }
 
@@ -100,6 +106,8 @@ namespace Sting {
                 public String DefaultUserName { get; set; }
 
                 public String DefaultPort { get; set; }
+
+                public String DefaultCustom1 { get; set; }
             }
 
             public VncServiceConfig Vnc { get; set; }
@@ -163,6 +171,12 @@ namespace Sting {
                 vncArguments = vncArguments.Replace(ServicesManager.VNC_USERNAME_SUBSTITUTION_STRING, vncHostParams.UserName);
             } else {
                 vncArguments = vncArguments.Replace(ServicesManager.VNC_USERNAME_SUBSTITUTION_STRING, this.servicesManagerConfig.Vnc.DefaultUserName);
+            }
+
+            if (vncHostParams.Custom1 != null) {
+                vncArguments = vncArguments.Replace(ServicesManager.VNC_CUSTOM1_SUBSTITUTION_STRING, vncHostParams.Custom1);
+            } else {
+                vncArguments = vncArguments.Replace(ServicesManager.VNC_CUSTOM1_SUBSTITUTION_STRING, this.servicesManagerConfig.Vnc.DefaultCustom1);
             }
 
             try {

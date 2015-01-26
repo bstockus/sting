@@ -35,7 +35,7 @@ namespace Sting {
     
     public partial class MainWindow : Window, INotifyPropertyChanged {
 
-        private HostsManager hostsManager = new HostsManager();
+        private HostsManager hostsManager;
 
         public HostsManager HostsManager {
             get {
@@ -53,6 +53,7 @@ namespace Sting {
         }
 
         public MainWindow() {
+            this.hostsManager = new HostsManager(this);
             InitializeComponent();
         }
 
@@ -136,7 +137,7 @@ namespace Sting {
         }
 
         void AddNewHost(String value) {
-            this.hostsManager.AddHost(value, this);  
+            this.hostsManager.AddHostWithErrorPopup(value);  
         }
 
         private void btnPauseHost_Click(object sender, RoutedEventArgs e) {
