@@ -30,6 +30,9 @@ namespace Sting.HostProvider {
                 [XmlElement("WebParams")]
                 public List<WebHostParams> WebHostParams { get; set; }
 
+                [XmlElement("Alias")]
+                public List<String> Aliases { get; set; }
+
             }
 
             public String DefaultDnsLookupSuffix { get; set; }
@@ -44,10 +47,15 @@ namespace Sting.HostProvider {
         private Dictionary<String, IPAddress> hostsCache = new Dictionary<string, IPAddress>();
         private Dictionary<String, SpecialHostsConfig.SpecialHostConfig> specialHostConfigsCache = new Dictionary<string, SpecialHostsConfig.SpecialHostConfig>();
 
+        private Dictionary<String, String> hostAliasesCache = new Dictionary<string, string>();
+
         public SpecialSubNetHostProvider() {
             this.specialHostsConfig = ConfigFileHelper.LoadConfigFile<SpecialHostsConfig>("SpecialHosts.xml");
             foreach (SpecialHostsConfig.SpecialHostConfig specialHostConfig in this.specialHostsConfig.SpecialHostConfigs) {
                 this.specialHostConfigsCache.Add(specialHostConfig.HostOctet, specialHostConfig);
+                foreach (string hostAlias in specialHostConfig.Aliases) {
+                    this.hostAliasesCache.Add(hostAlias.ToLower(), specialHostConfig.HostOctet);
+                }
             }
         }
 
@@ -55,6 +63,10 @@ namespace Sting.HostProvider {
             string[] splits = value.Split('/');
             string siteValue = splits[0];
             string hostValue = splits[1];
+
+            if (this.hostAliasesCache.ContainsKey(hostValue.ToLower())) {
+                hostValue = this.hostAliasesCache[hostValue.ToLower()];
+            }
 
             int _tempIntValue;
             IPAddress hostAddress;
