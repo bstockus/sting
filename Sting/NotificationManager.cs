@@ -49,7 +49,7 @@ namespace Sting {
 
         public void Notify(string title, string message, string imageName) {
             if (this.IsEnabled) {
-                Task.Run(() => {
+                Task.Factory.StartNew(() => {
                     NotificationWindow notificationWindow;
                     App.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => {
                         notificationWindow = new NotificationWindow(title, message, currentHighId++, imageName);
@@ -75,7 +75,7 @@ namespace Sting {
 
             currentLowId++;
 
-            Task.Run(() => {
+            Task.Factory.StartNew(() => {
                 this.notificationWindows.Add(notificationWindow);
                 Thread.Sleep(TimeSpan.FromSeconds(10));
                 this.notificationWindows.Remove(notificationWindow);

@@ -85,7 +85,7 @@ namespace Sting {
         }
 
         public void AddHost(String value, MainWindow mainWindow) {
-            Task.Run(() => {
+            Task.Factory.StartNew(() => {
                 foreach (IHostProvider hostProvider in this.hostProviders) {
                     if (hostProvider.ValidHostValue(value)) {
                         try {
@@ -159,7 +159,7 @@ namespace Sting {
         }
 
         public void PingHosts() {
-            Task.Run(() => {
+            Task.Factory.StartNew(() => {
                 foreach (BasicHost host in this.hosts) {
                     host.Ping().Start();
                 }
