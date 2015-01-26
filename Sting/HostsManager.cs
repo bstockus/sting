@@ -96,9 +96,7 @@ namespace Sting {
                     try {
                         BasicHost host = hostProvider.Host(value, this);
                         if (host != null) {
-                            System.Diagnostics.Debug.WriteLine("Check Lock: " + value);
                             lock (addHostLock) {
-                                System.Diagnostics.Debug.WriteLine("Begin Lock: " + value);
                                 this.mainWindow.Dispatcher.BeginInvoke(DispatcherPriority.ApplicationIdle, new Action(() => {
                                     if (hosts.Count == 0) {
                                         this.updateDispatchTimer.Start();
@@ -107,9 +105,7 @@ namespace Sting {
                                     hosts.Add(host);
                                     host.Ping().Start();
                                 }));
-                                System.Diagnostics.Debug.WriteLine("End Lock: " + value);
                             }
-                            System.Diagnostics.Debug.WriteLine("Done Lock: " + value);
                         }
                         return true;
                     } catch (BasicHostAllReadyExistsException e) {
@@ -148,6 +144,18 @@ namespace Sting {
                 host.RemoveHost();
             }
             hosts.Clear();
+        }
+
+        public void RemoveAllHostsInGroup(String groupName) {
+            List<BasicHost> hostsToRemove = new List<BasicHost>();
+            foreach (BasicHost host in this.hosts) {
+                if (host.GroupName == groupName) {
+                    hostsToRemove.Add(host);
+                }
+            }
+            foreach (BasicHost host in hostsToRemove) {
+                this.RemoveHost(host);
+            }
         }
 
         public void SetPingInterval(int index) {

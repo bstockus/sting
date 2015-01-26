@@ -307,6 +307,30 @@
                                                 <TextBlock Text="{Binding Name}" FontWeight="Bold" Foreground="Gray" FontSize="22" VerticalAlignment="Bottom" />
                                                 <TextBlock Text="{Binding ItemCount}" FontSize="22" Foreground="Green" FontWeight="Bold" FontStyle="Italic" Margin="10,0,0,0" VerticalAlignment="Bottom" />
                                                 <TextBlock Text=" host(s)" FontSize="22" Foreground="Silver" FontStyle="Italic" VerticalAlignment="Bottom" />
+                                                <Button x:Name="btnRemoveGroup"
+                                                        Height="20" 
+                                                        Width="20"
+                                                        Margin="2,0"
+                                                        Grid.Row="0"
+                                                        Grid.Column="2"
+                                                        Tag="{Binding Name}"
+                                                        HorizontalAlignment="Right"
+                                                        VerticalAlignment="Center" 
+                                                        Click="btnRemoveGroup_Click">
+                                                    <Button.Template>
+                                                        <ControlTemplate TargetType="Button">
+                                                            <ControlTemplate.Triggers>
+                                                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="False">
+                                                                    <Setter TargetName="img" Property="Image.Source" Value="../Images/round_delete.png"></Setter>
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="True">
+                                                                    <Setter TargetName="img" Property="Image.Source" Value="../Images/act_round_delete.png"></Setter>
+                                                                </DataTrigger>
+                                                            </ControlTemplate.Triggers>
+                                                            <Image Source="../Images/round_delete.png" x:Name="img"></Image>
+                                                        </ControlTemplate>
+                                                    </Button.Template>
+                                                </Button>
                                             </StackPanel>
                                         </Expander.Header>
                                         <ItemsPresenter />

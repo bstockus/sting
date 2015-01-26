@@ -180,5 +180,11 @@ namespace Sting {
             }
         }
 
+        private void btnRemoveGroup_Click(object sender, RoutedEventArgs e) {
+            String groupName = (String)((Button)sender).Tag;
+            System.Diagnostics.Debug.WriteLine("MainWindow.btnRemoveGroup_Click(): " + groupName);
+            hostsManager.RemoveAllHostsInGroup(groupName);
+        }
+
     }
 }
