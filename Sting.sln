@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sting", "Sting\Sting.csproj
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6D7FA7F0-1A1D-4E98-A659-40E8EF804D76}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickSting", "QuickSting\QuickSting.csproj", "{5CC9C074-621C-4748-9414-8C43F60868F0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,6 +19,10 @@ Global
 		{DE2C28C8-D0D1-4183-A88A-0E4DD97E0CC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DE2C28C8-D0D1-4183-A88A-0E4DD97E0CC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DE2C28C8-D0D1-4183-A88A-0E4DD97E0CC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5CC9C074-621C-4748-9414-8C43F60868F0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CC9C074-621C-4748-9414-8C43F60868F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CC9C074-621C-4748-9414-8C43F60868F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CC9C074-621C-4748-9414-8C43F60868F0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
