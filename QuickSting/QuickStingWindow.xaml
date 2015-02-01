@@ -1,0 +1,117 @@
+﻿<Window x:Class="QuickSting.QuickStingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:QuickSting"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
+        xmlns:Microsoft_Windows_Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
+        xmlns:blend="http://schemas.microsoft.com/expression/2010/interactivity"
+        Title="" 
+        Icon="Images/lighting_icon.png"
+        Height="90" 
+        Width="400"
+        AllowsTransparency="False" 
+        Background="Transparent" 
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        ShowInTaskbar="True"
+        WindowStartupLocation="CenterScreen" 
+        Topmost="True" 
+        Activated="Window_Activated" 
+        Deactivated="Window_Deactivated"
+        Visibility="Hidden">
+
+    <Window.Resources>
+        <Style TargetType="{x:Type TextBox}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <!-- Modify default template, to change triggers -->
+                    <ControlTemplate TargetType="{x:Type TextBoxBase}">
+                        <Border x:Name="border" 
+                                BorderBrush="LightGray" 
+                                BorderThickness="2" 
+                                Background="White" 
+                                SnapsToDevicePixels="True"
+                                CornerRadius="10"
+                                Padding="5">
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Grid RenderTransformOrigin="0,1">
+
+        <Border BorderThickness="1" 
+                Background="Black" 
+                BorderBrush="White" 
+                CornerRadius="10" 
+                Padding="2">
+
+            <Grid HorizontalAlignment="Stretch" ShowGridLines="False">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="2*"></ColumnDefinition>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"></RowDefinition>
+                    <RowDefinition></RowDefinition>
+                </Grid.RowDefinitions>
+                
+                <Image Grid.Row="0" Grid.Column="0" Source="Images/inv_lighting_icon.png" Width="20" Height="20" HorizontalAlignment="Left"></Image>
+                
+                <TextBlock Grid.Row="0" 
+                           Grid.Column="1" 
+                           HorizontalAlignment="Center" 
+                           Foreground="White" 
+                           FontWeight="Bold" 
+                           FontSize="20">Quick Sting</TextBlock>
+
+                <StackPanel Grid.Row="0" 
+                            Grid.Column="2" 
+                            Orientation="Horizontal" 
+                            HorizontalAlignment="Right">
+
+                    <Button x:Name="btnClose"
+                            Height="20" 
+                            Width="20"
+                            Margin="2,0"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top" 
+                            Click="btnClose_Click">
+                        <Button.Template>
+                            <ControlTemplate TargetType="{x:Type Button}">
+                                <ControlTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="False">
+                                        <Setter TargetName="img" 
+                                                Property="Image.Source" 
+                                                Value="Images/round_delete.png"></Setter>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="True">
+                                        <Setter TargetName="img" 
+                                                Property="Image.Source" 
+                                                Value="Images/act_round_delete.png"></Setter>
+                                    </DataTrigger>
+                                </ControlTemplate.Triggers>
+                                <Image Source="Images/round_delete.png" x:Name="img"></Image>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                </StackPanel>
+                
+                <TextBox Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1" x:Name="txtSearch" Margin="5,0,5,5" FontSize="25" KeyDown="txtSearch_KeyDown"></TextBox>
+                
+            </Grid>
+
+        </Border>
+
+        <Grid.RenderTransform>
+            <ScaleTransform ScaleY="1" />
+        </Grid.RenderTransform>
+
+    </Grid>
+</Window>

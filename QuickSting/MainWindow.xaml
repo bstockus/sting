@@ -218,7 +218,7 @@
         
     </Window.Resources>
     
-    <Grid RenderTransformOrigin="0,1" >
+    <Grid RenderTransformOrigin="0,1">
 
         <Border BorderThickness="1" 
                 Background="Black" 
