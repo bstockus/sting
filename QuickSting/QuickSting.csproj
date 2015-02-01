@@ -34,8 +34,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="PresentationFramework.Aero" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Interactivity, Version=4.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Expression.Blend.Sdk.1.0.2\lib\net45\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -53,6 +57,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="BubbleScrollEvent.cs" />
+    <Compile Include="ImageButtonWithHoverProperties.cs" />
+    <Compile Include="Win32Interop.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -61,6 +68,10 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ExternalProgram.cs" />
+    <Compile Include="GroupStyleSelector.cs" />
+    <Compile Include="Host.cs" />
+    <Compile Include="HostCollection.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -84,6 +95,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -92,6 +104,29 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\act_round_delete.png" />
+    <Resource Include="Images\round_delete.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\act_arrow_down.png" />
+    <Resource Include="Images\act_arrow_right.png" />
+    <Resource Include="Images\arrow_down.png" />
+    <Resource Include="Images\arrow_right.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\act_round_minus.png" />
+    <Resource Include="Images\round_minus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\lighting_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\status_bad.png" />
+    <Resource Include="Images\status_down.png" />
+    <Resource Include="Images\status_unknown.png" />
+    <Resource Include="Images\status_up.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
