@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Xml.Serialization;
 
 namespace QuickSting {
 
@@ -17,6 +19,25 @@ namespace QuickSting {
         public string Name { get; set; }
 
         public string GroupName { get; set; }
+
+        public Service[] Services { get; set; }
+
+    }
+
+    [Serializable]
+    public struct Service {
+
+        [XmlAttribute("Type")]
+        public string ServiceType { get; set; }
+
+        [XmlAttribute("Name")]
+        public string Name { get; set; }
+
+        [XmlAttribute("Program")]
+        public string Program { get; set; }
+
+        [XmlText]
+        public string CommandLine { get; set; }
 
     }
 
@@ -32,7 +53,8 @@ namespace QuickSting {
         private String name;
         private String groupName;
         private HostStatus hostStatus;
-        private UIElement hostControls;
+        private ContextMenu hostControls;
+        private UIElement hostToolTip;
 
         public String Name {
             get {
@@ -71,13 +93,23 @@ namespace QuickSting {
             }
         }
 
-        public UIElement HostControls {
+        public ContextMenu HostControls {
             get {
                 return this.hostControls;
             }
             private set {
                 this.hostControls = value;
                 this.NotifyPropertyChanged("HostControls");
+            }
+        }
+
+        public UIElement HostToolTip {
+            get {
+                return this.hostToolTip;
+            }
+            private set {
+                this.hostToolTip = value;
+                this.NotifyPropertyChanged("HostToolTip");
             }
         }
 
@@ -89,7 +121,67 @@ namespace QuickSting {
             this.Name = hostInformation.Name;
             this.GroupName = hostInformation.GroupName;
             this.HostStatus = QuickSting.HostStatus.Unknown;
-            this.HostControls = new UIElement();
+
+            ContextMenu contextMenu = new ContextMenu();
+            if (hostInformation.Services != null) {
+                foreach (Service service in hostInformation.Services) {
+                    MenuItem menuItem = new MenuItem();
+                    if (service.ServiceType.Equals("VNC")) {
+                        menuItem.Icon = new Image {
+                            Source = new BitmapImage(new Uri("pack://application:,,,/QuickSting;component/Images/svc_vnc.png"))
+                        };
+                    } else if (service.ServiceType.Equals("CMD")) {
+                        menuItem.Icon = new Image {
+                            Source = new BitmapImage(new Uri("pack://application:,,,/QuickSting;component/Images/svc_cmd_line.png"))
+                        };
+                    } else if (service.ServiceType.Equals("WEB")) {
+                        menuItem.Icon = new Image {
+                            Source = new BitmapImage(new Uri("pack://application:,,,/QuickSting;component/Images/svc_web.png"))
+                        };
+                    } else {
+                        menuItem.Icon = new Image {
+                            Source = new BitmapImage(new Uri("pack://application:,,,/QuickSting;component/Images/svc_blank.png"))
+                        };
+                    }
+                    
+                    menuItem.Header = service.Name;
+                    menuItem.Tag = service;
+                    menuItem.Click += this.ServicesMenuItem_Click;
+                    contextMenu.Items.Add(menuItem);
+                }
+            } else {
+                MenuItem menuItem = new MenuItem();
+                menuItem.Header = "<No Services>";
+                menuItem.IsEnabled = false;
+                contextMenu.Items.Add(menuItem);
+            }
+
+            Border border = new Border();
+            border.Margin = new Thickness(0.0);
+            border.BorderBrush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
+            border.BorderThickness = new Thickness(1.0);
+            border.Background = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+
+            Grid grid = new Grid();
+
+            ColumnDefinition columnDefinition1 = new ColumnDefinition();
+
+            RowDefinition rowDefinition1 = new RowDefinition();
+
+            grid.ColumnDefinitions.Add(columnDefinition1);
+            grid.RowDefinitions.Add(rowDefinition1);
+
+            TextBlock textBlock = new TextBlock();
+            textBlock.Text = ipAddress.ToString();
+            Grid.SetColumn(grid, 0);
+            Grid.SetRow(grid, 0);
+            grid.Children.Add(textBlock);
+
+            border.Child = (UIElement)grid;
+
+            this.HostToolTip = (UIElement)border;
+
+            this.HostControls = contextMenu;
             this.IPAddress = ipAddress;
         }
 
@@ -102,6 +194,20 @@ namespace QuickSting {
 
         private void NotifyPropertyChanged(string propertyName) {
             this.OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
+        }
+
+        public void ServicesMenuItem_Click(Object sender, RoutedEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("ServicesMenuItem_Click");
+            MenuItem menuItem = (MenuItem)e.Source;
+            Service service = (Service)menuItem.Tag;
+            System.Diagnostics.Debug.WriteLine(service.CommandLine);
+            string commandLine = service.CommandLine;
+            if (commandLine == null) commandLine = "";
+            commandLine = commandLine.Replace("%%%IP%%%", this.IPAddress.ToString());
+            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
+            startInfo.Arguments = commandLine;
+            startInfo.FileName = service.Program;
+            System.Diagnostics.Process.Start(startInfo);
         }
 
         #region Ping Handler
@@ -118,14 +224,14 @@ namespace QuickSting {
 
         private List<Tuple<DateTime, PingReply>> pingReplyHistory = new List<Tuple<DateTime, PingReply>>();
 
-        public Task Ping() {
+        public Task Ping(bool notify) {
             Task task = new Task(() => {
-                this.DoPing();
+                this.DoPing(notify);
             });
             return task;
         }
 
-        private void DoPing() {
+        private void DoPing(bool notify) {
             System.Diagnostics.Debug.WriteLine("Sent Ping to " + this.IPAddress.ToString());
             Ping ping = new Ping();
             PingOptions pingOptions = new PingOptions();

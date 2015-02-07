@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 namespace Sting.HostProvider {
     public interface IHostProvider {
 
-        BasicHost Host(String value, HostsManager hostsManager);
+        BasicHost Host(String value, IHostManager hostsManager);
 
         Boolean ValidHostValue(String value);
 

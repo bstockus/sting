@@ -21,6 +21,8 @@ namespace QuickSting {
 
         KeyboardHook hook = new KeyboardHook();
 
+        HostProvider hostProvider = new HostProvider();
+
         public QuickStingWindow() {
             InitializeComponent();
 
@@ -56,6 +58,8 @@ namespace QuickSting {
         private void ShowWindow() {
             this.Activate();
             this.Visibility = System.Windows.Visibility.Visible;
+            this.txtSearch.Focus();
+            this.txtSearch.SelectAll();
         }
 
         private void ToggleVisibility() {
@@ -73,6 +77,16 @@ namespace QuickSting {
                 e.Handled = true;
             } else if (e.Key == Key.Enter) {
                 e.Handled = true;
+                try {
+                    HostCollection hostCollection = this.hostProvider.Host(this.txtSearch.Text);
+                    MainWindow mainWindow = new MainWindow(this.txtSearch.Text, hostCollection);
+                    mainWindow.Show();
+                } catch (Exception) {
+                    System.Windows.MessageBox.Show("Unable to locate host " + this.txtSearch.Text + ".", "ERROR");
+                }
+
+                this.HideWindow();
+
             }
         }
 

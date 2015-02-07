@@ -30,7 +30,7 @@ namespace Sting {
 
     }
 
-    public class HostsManager : INotifyPropertyChanged {
+    public class HostsManager : INotifyPropertyChanged, IHostManager {
 
         private ObservableCollection<BasicHost> hosts = new ObservableCollection<BasicHost>();
 

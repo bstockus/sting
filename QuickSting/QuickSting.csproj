@@ -49,6 +49,7 @@
     <Reference Include="System.Xaml">
       <RequiredTargetFramework>4.0</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Xml.Serialization" />
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -59,7 +60,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="BubbleScrollEvent.cs" />
-    <Compile Include="ImageButtonWithHoverProperties.cs" />
+    <Compile Include="ConfigFileHelper.cs" />
+    <Compile Include="HostProvider.cs" />
     <Compile Include="KeyboardHook.cs" />
     <Compile Include="QuickStingWindow.xaml.cs">
       <DependentUpon>QuickStingWindow.xaml</DependentUpon>
@@ -139,6 +141,38 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\inv_lighting_icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\svc_blank.png" />
+    <Resource Include="Images\svc_cmd_line.png" />
+    <Resource Include="Images\svc_vnc.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\notify.png" />
+    <Resource Include="Images\no_notify.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\act_notify.png" />
+    <Resource Include="Images\act_no_notify.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\svc_black.png" />
+    <Resource Include="Images\svc_web.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\svc_x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\site_folder.png" />
+    <Resource Include="Images\site_mail.png" />
+    <Resource Include="Images\site_phone.png" />
+    <Resource Include="Images\site_pics.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\dropdown.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\act_dropdown.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

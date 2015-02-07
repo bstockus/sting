@@ -24,7 +24,13 @@ namespace QuickSting {
 
         public HostCollection HostCollection { get; private set; }
 
+        private Dictionary<string, bool> groupsDictionary = new Dictionary<string, bool>();
+
         private bool paused = false;
+
+        private IntPtr windowHandle;
+
+        public String SiteName { get; set; }
 
         public bool IsPaused {
             get {
@@ -36,24 +42,9 @@ namespace QuickSting {
             }
         }
 
-        public MainWindow() {
-            this.HostCollection = new HostCollection();
-            this.HostCollection.Add(new Host(new HostInformation {
-                Name = "Host 1",
-                GroupName = ""
-            }, IPAddress.Parse("10.0.1.1")));
-            this.HostCollection.Add(new Host(new HostInformation {
-                Name = "Host 2",
-                GroupName = ""
-            }, IPAddress.Parse("10.0.1.201")));
-            this.HostCollection.Add(new Host(new HostInformation {
-                Name = "Host 3",
-                GroupName = ""
-            }, IPAddress.Parse("10.0.1.55")));
-            this.HostCollection.Add(new Host(new HostInformation {
-                Name = "Host 4",
-                GroupName = "Group 1"
-            }, IPAddress.Parse("8.8.8.8")));
+        public MainWindow(String title, HostCollection hostCollection) {
+            this.HostCollection = hostCollection;
+            this.SiteName = title;
             InitializeComponent();
         }
 
@@ -69,6 +60,7 @@ namespace QuickSting {
 
         private void btnClose_Click(object sender, RoutedEventArgs e) {
             System.Diagnostics.Debug.WriteLine("btnClose_Click");
+            this.pingDispatchTimer.Stop();
             this.Close();
             e.Handled = true;
         }
@@ -87,14 +79,28 @@ namespace QuickSting {
             view.GroupDescriptions.Add(new PropertyGroupDescription("GroupName"));
             view.SortDescriptions.Add(new SortDescription("GroupName", ListSortDirection.Ascending));
 
+            foreach (CollectionViewGroup group in view.Groups) {
+                if (group.Name.ToString().Equals("")) {
+                    this.groupsDictionary.Add(group.Name.ToString(), true);
+                } else {
+                    this.groupsDictionary.Add(group.Name.ToString(), false);
+                }
+            }
+
             this.pingDispatchTimer.Tick += new EventHandler(pingDispatchTimer_Tick);
             this.pingDispatchTimer.Interval = new TimeSpan(0, 0, 2);
             this.pingDispatchTimer.Start();
+
+            this.NotifyPropertyChanged("SiteName");
+            this.Title = this.SiteName;
+            this.NotifyPropertyChanged("Title");
+
+            this.windowHandle = new WindowInteropHelper(this).Handle;
         }
 
         private void Window_MouseDown(object sender, MouseButtonEventArgs e) {
             Win32Interop.ReleaseCapture();
-            Win32Interop.SendMessage(new WindowInteropHelper(this).Handle, 0xA1, (IntPtr)0x2, (IntPtr)0);
+            Win32Interop.SendMessage(this.windowHandle, 0xA1, (IntPtr)0x2, (IntPtr)0);
         }
 
         private void pingDispatchTimer_Tick(object sender, EventArgs e) {
@@ -102,7 +108,9 @@ namespace QuickSting {
             if (!this.IsPaused) {
                 Task.Factory.StartNew(() => {
                     foreach (Host host in this.HostCollection) {
-                        host.Ping().Start();
+                        if (this.groupsDictionary[host.GroupName]) {
+                            host.Ping(this.IsPaused).Start();
+                        }
                     }
                 });
             }
@@ -117,6 +125,33 @@ namespace QuickSting {
 
         private void NotifyPropertyChanged(string propertyName) {
             this.OnPropertyChanged(new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void Expander_Collapsed(object sender, RoutedEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("Expander_Collapsed");
+            Expander expander = (Expander)e.Source;
+            CollectionViewGroup collectionViewGroup = (CollectionViewGroup)expander.DataContext;
+            System.Diagnostics.Debug.WriteLine(collectionViewGroup.Name);
+            this.groupsDictionary[collectionViewGroup.Name.ToString()] = false;
+        }
+
+        private void Expander_Expanded(object sender, RoutedEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("Expander_Expanded");
+            Expander expander = (Expander)e.Source;
+            CollectionViewGroup collectionViewGroup = (CollectionViewGroup)expander.DataContext;
+            System.Diagnostics.Debug.WriteLine(collectionViewGroup.Name);
+            this.groupsDictionary[collectionViewGroup.Name.ToString()] = true;
+        }
+
+        private void btnNotify_Click(object sender, RoutedEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("btnNotify_Click");
+            this.IsPaused = !(this.IsPaused);
+            this.NotifyPropertyChanged("IsPaused");
+        }
+
+        private void btnSiteDetails_Click(object sender, RoutedEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("btnSiteDetails_Click");
+            this.ctxSiteDetails.IsOpen = true;
         }
 
     }

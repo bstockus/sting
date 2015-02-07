@@ -74,7 +74,7 @@ namespace Sting.HostProvider {
 
         private readonly object hostsCacheLock = new object();
 
-        public BasicHost Host(string value, HostsManager hostsManager) {
+        public BasicHost Host(string value, IHostManager hostsManager) {
             string[] splits = value.Split('/');
             string siteValue = splits[0];
             string hostValue = splits[1];

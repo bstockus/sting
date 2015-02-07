@@ -82,6 +82,7 @@
     <Compile Include="HostProvider\HostGroupProvider.cs" />
     <Compile Include="Host\IServicableHost.cs" />
     <Compile Include="Host\ServiceGroupedDnsHost.cs" />
+    <Compile Include="IHostManager.cs" />
     <Compile Include="ServicesManager.cs" />
     <Compile Include="SettingsManager.cs" />
     <Compile Include="Windows\ShowToolTipOnOverflowTextBox.cs" />
