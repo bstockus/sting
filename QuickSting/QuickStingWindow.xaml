@@ -48,6 +48,10 @@
                         ToolTipText="QuickSting">
             <tb:TaskbarIcon.ContextMenu>
                 <ContextMenu x:Name="ctxSysTrayMenu">
+                    <MenuItem x:Name="ctxSysTrayMenu_Search"
+                              Header="New Site..." 
+                              Click="ctxSysTrayMenu_Search_Click"></MenuItem>
+                    <Separator></Separator>
                     <MenuItem x:Name="ctxSysTrayMenu_Quit"
                               Header="Quit QuickSting" 
                               Click="ctxSysTrayMenu_Quit_Click"></MenuItem>

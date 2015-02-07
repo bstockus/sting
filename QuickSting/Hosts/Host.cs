@@ -21,6 +21,8 @@ namespace QuickSting {
 
         public string GroupName { get; set; }
 
+        public string Description { get; set; }
+
         public Service[] Services { get; set; }
 
     }
@@ -53,6 +55,7 @@ namespace QuickSting {
 
         private String name;
         private String groupName;
+        private String description;
         private HostStatus hostStatus;
         private ContextMenu hostControls;
         private UIElement hostToolTip;
@@ -64,6 +67,16 @@ namespace QuickSting {
             private set {
                 this.name = value;
                 this.NotifyPropertyChanged("Name");
+            }
+        }
+
+        public String Description {
+            get {
+                return this.description;
+            }
+            private set {
+                this.description = value;
+                this.NotifyPropertyChanged("Description");
             }
         }
 
@@ -119,6 +132,7 @@ namespace QuickSting {
         public Host(HostInformation hostInformation, IPAddress ipAddress) {
             this.Name = hostInformation.Name;
             this.GroupName = hostInformation.GroupName;
+            this.Description = hostInformation.Description;
             this.HostStatus = QuickSting.HostStatus.Unknown;
 
             ContextMenu contextMenu = new ContextMenu();
@@ -164,12 +178,6 @@ namespace QuickSting {
                 contextMenu.Items.Add(menuItem);
             }
 
-            Border border = new Border();
-            border.Margin = new Thickness(0.0);
-            border.BorderBrush = new SolidColorBrush(Color.FromRgb(255, 255, 255));
-            border.BorderThickness = new Thickness(1.0);
-            border.Background = new SolidColorBrush(Color.FromRgb(0, 0, 0));
-
             Grid grid = new Grid();
 
             ColumnDefinition columnDefinition1 = new ColumnDefinition();
@@ -180,14 +188,13 @@ namespace QuickSting {
             grid.RowDefinitions.Add(rowDefinition1);
 
             TextBlock textBlock = new TextBlock();
+            textBlock.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("WhiteSmoke"));
             textBlock.Text = ipAddress.ToString();
             Grid.SetColumn(grid, 0);
             Grid.SetRow(grid, 0);
             grid.Children.Add(textBlock);
 
-            border.Child = (UIElement)grid;
-
-            this.HostToolTip = (UIElement)border;
+            this.HostToolTip = (UIElement)grid;
 
             this.HostControls = contextMenu;
             this.IPAddress = ipAddress;
@@ -214,7 +221,7 @@ namespace QuickSting {
             commandLine = commandLine.Replace("%%%IP%%%", this.IPAddress.ToString());
             System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
             startInfo.Arguments = commandLine;
-            startInfo.FileName = service.Program;
+            startInfo.FileName = service.Program.Replace("%%%IP%%%", this.IPAddress.ToString()); ;
             System.Diagnostics.Process.Start(startInfo);
         }
 

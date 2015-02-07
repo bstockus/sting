@@ -605,6 +605,32 @@
 
                         <ListBox.ItemTemplate>
                             <DataTemplate>
+                                <DataTemplate.Resources>
+                                    <Style TargetType="{x:Type ToolTip}">
+                                        <Setter Property="Visibility" Value="Visible" />
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ToolTip">
+                                                    <Border Background="Black">
+                                                        <TextBlock FontFamily="Tahoma" 
+                                                                   FontSize="11" 
+                                                                   Foreground="WhiteSmoke"
+                                                                   Padding="2"
+                                                                   Text="{TemplateBinding Content}" />
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Content}" Value="{x:Null}">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Content}" Value="">
+                                                <Setter Property="Visibility" Value="Collapsed" />
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataTemplate.Resources>
                                 <Border Margin="5,1" 
                                         BorderThickness="0" 
                                         BorderBrush="Gray" 
@@ -631,7 +657,9 @@
                                                    FontWeight="Thin"
                                                    Foreground="White"
                                                    TextWrapping="WrapWithOverflow"
-                                                   TextTrimming="CharacterEllipsis"></TextBlock>
+                                                   TextTrimming="CharacterEllipsis"
+                                                   ToolTip="{Binding Path=Description}">
+                                        </TextBlock>
 
                                         <Button x:Name="imgStatus" 
                                                 Grid.Row="1"
@@ -641,6 +669,32 @@
                                                 Width="20"
                                                 Height="20"
                                                 ContextMenu="{Binding HostControls}">
+                                            <Button.ToolTip>
+                                                <ToolTip Content="{Binding HostToolTip}">
+                                                    <ToolTip.Style>
+                                                        <Style TargetType="{x:Type ToolTip}">
+                                                            <Setter Property="Visibility" Value="Visible" />
+                                                            <Setter Property="Template">
+                                                                <Setter.Value>
+                                                                    <ControlTemplate TargetType="ToolTip">
+                                                                        <Border Background="Black">
+                                                                            <ContentPresenter Content="{TemplateBinding Content}"></ContentPresenter>
+                                                                        </Border>
+                                                                    </ControlTemplate>
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Content}" Value="{x:Null}">
+                                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                                </DataTrigger>
+                                                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Content}" Value="">
+                                                                    <Setter Property="Visibility" Value="Collapsed" />
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </ToolTip.Style>
+                                                </ToolTip>
+                                            </Button.ToolTip>
                                             <Button.Template>
                                                 <ControlTemplate TargetType="{x:Type Button}">
                                                     <ControlTemplate.Triggers>

@@ -100,6 +100,12 @@ namespace QuickSting {
 
         private void ctxSysTrayMenu_Quit_Click(object sender, RoutedEventArgs e) {
             System.Diagnostics.Debug.WriteLine("ctxSysTrayMenu_Quit_Click");
+            System.Windows.Application.Current.Shutdown();
+        }
+
+        private void ctxSysTrayMenu_Search_Click(object sender, RoutedEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("ctxSysTrayMenu_Search_Click");
+            this.ShowWindow();
         }
 
     }

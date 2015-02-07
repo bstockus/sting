@@ -39,6 +39,9 @@ namespace QuickSting {
                 [XmlAttribute("Group")]
                 public String GroupName { get; set; }
 
+                [XmlAttribute("Description")]
+                public String Description { get; set; }
+
                 [XmlElement("Service")]
                 public Service[] Services { get; set; }
 
@@ -91,7 +94,8 @@ namespace QuickSting {
                 hostCollection.Add(new Host(new HostInformation {
                     Name = host.DisplayName,
                     GroupName = host.GroupName,
-                    Services = host.Services
+                    Services = host.Services,
+                    Description = host.Description
                 }, hostAddress));
             }
 
