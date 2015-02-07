@@ -15,35 +15,6 @@ using System.Xml.Serialization;
 
 namespace QuickSting {
 
-    public struct HostInformation {
-
-        public string Name { get; set; }
-
-        public string GroupName { get; set; }
-
-        public string Description { get; set; }
-
-        public Service[] Services { get; set; }
-
-    }
-
-    [Serializable]
-    public struct Service {
-
-        [XmlAttribute("Type")]
-        public string ServiceType { get; set; }
-
-        [XmlAttribute("Name")]
-        public string Name { get; set; }
-
-        [XmlAttribute("Program")]
-        public string Program { get; set; }
-
-        [XmlText]
-        public string CommandLine { get; set; }
-
-    }
-
     public enum HostStatus : int {
         Up = 1,
         Down,

@@ -64,8 +64,10 @@
     </ApplicationDefinition>
     <Compile Include="Helpers\BubbleScrollEvent.cs" />
     <Compile Include="Helpers\ConfigFileHelper.cs" />
+    <Compile Include="Hosts\HostInformation.cs" />
     <Compile Include="Hosts\HostProvider.cs" />
     <Compile Include="Helpers\KeyboardHook.cs" />
+    <Compile Include="Hosts\Service.cs" />
     <Compile Include="Notifications\Notification.cs" />
     <Compile Include="Notifications\WPFGrowlNotification.xaml.cs">
       <DependentUpon>WPFGrowlNotification.xaml</DependentUpon>

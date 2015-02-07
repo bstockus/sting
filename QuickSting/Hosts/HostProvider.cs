@@ -25,44 +25,25 @@ namespace QuickSting {
 
         [Serializable]
         [XmlRoot("SpecialHosts")]
-        public class SpecialHostsConfig {
+        public class SpecialHosts {
 
-            [Serializable]
-            public class SpecialHostConfig {
-
-                [XmlAttribute("HostOctet")]
-                public String HostOctet { get; set; }
-
-                [XmlAttribute("Name")]
-                public String DisplayName { get; set; }
-
-                [XmlAttribute("Group")]
-                public String GroupName { get; set; }
-
-                [XmlAttribute("Description")]
-                public String Description { get; set; }
-
-                [XmlElement("Service")]
-                public Service[] Services { get; set; }
-
-            }
-
-            public String DefaultDnsLookupSuffix { get; set; }
+            [XmlAttribute("DnsPattern")]
+            public string DnsPattern { get; set; }
 
             [XmlElement("Host")]
-            public List<SpecialHostConfig> SpecialHostConfigs { get; set; }
+            public List<HostInformation> Hosts { get; set; }
 
         }
 
-        private SpecialHostsConfig specialHostsConfig = null;
+        private SpecialHosts specialHosts = null;
 
-        private Dictionary<String, IPAddress> hostsCache = new Dictionary<string, IPAddress>();
-        private Dictionary<String, SpecialHostsConfig.SpecialHostConfig> specialHostConfigsCache = new Dictionary<string, SpecialHostsConfig.SpecialHostConfig>();
+        private Dictionary<String, IPAddress> hostIPAddressCache = new Dictionary<string, IPAddress>();
+        private Dictionary<String, HostInformation> hostsCache = new Dictionary<string, HostInformation>();
 
         public HostProvider() {
-            this.specialHostsConfig = ConfigFileHelper.LoadConfigFile<SpecialHostsConfig>("SpecialHosts.xml");
-            foreach (SpecialHostsConfig.SpecialHostConfig specialHostConfig in this.specialHostsConfig.SpecialHostConfigs) {
-                this.specialHostConfigsCache.Add(specialHostConfig.HostOctet, specialHostConfig);
+            this.specialHosts = ConfigFileHelper.LoadConfigFile<SpecialHosts>("SpecialHosts.xml");
+            foreach (HostInformation host in this.specialHosts.Hosts) {
+                this.hostsCache.Add(host.HostOctet, host);
             }
         }
 
@@ -71,11 +52,11 @@ namespace QuickSting {
         private IPAddress GetSiteAddress(String siteValue) {
             IPAddress siteAddress;
             lock (hostsCacheLock) {
-                if (hostsCache.ContainsKey(siteValue)) {
-                    siteAddress = hostsCache[siteValue];
+                if (hostIPAddressCache.ContainsKey(siteValue)) {
+                    siteAddress = hostIPAddressCache[siteValue];
                 } else {
-                    siteAddress = Lookup(siteValue + specialHostsConfig.DefaultDnsLookupSuffix);
-                    hostsCache.Add(siteValue, siteAddress);
+                    siteAddress = Lookup(specialHosts.DnsPattern.Replace("%%%SITE%%%", siteValue));
+                    hostIPAddressCache.Add(siteValue, siteAddress);
                 }
             }
             return siteAddress;
@@ -87,16 +68,11 @@ namespace QuickSting {
 
             IPAddress siteAddress = GetSiteAddress(value);
 
-            foreach (SpecialHostsConfig.SpecialHostConfig host in specialHostConfigsCache.Values) {
+            foreach (HostInformation host in hostsCache.Values) {
                 Byte[] siteAddressBytes = siteAddress.GetAddressBytes();
                 siteAddressBytes[3] = byte.Parse(host.HostOctet);
                 IPAddress hostAddress = new IPAddress(siteAddressBytes);
-                hostCollection.Add(new Host(new HostInformation {
-                    Name = host.DisplayName,
-                    GroupName = host.GroupName,
-                    Services = host.Services,
-                    Description = host.Description
-                }, hostAddress));
+                hostCollection.Add(new Host(host, hostAddress));
             }
 
             return hostCollection;
