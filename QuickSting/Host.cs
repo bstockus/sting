@@ -123,24 +123,33 @@ namespace QuickSting {
             this.HostStatus = QuickSting.HostStatus.Unknown;
 
             ContextMenu contextMenu = new ContextMenu();
+            contextMenu.Resources.Add("MenuPopupBrush", new SolidColorBrush(Color.FromRgb(0, 0, 0)));
             if (hostInformation.Services != null) {
                 foreach (Service service in hostInformation.Services) {
                     MenuItem menuItem = new MenuItem();
                     if (service.ServiceType.Equals("VNC")) {
                         menuItem.Icon = new Image {
-                            Source = new BitmapImage(new Uri("pack://application:,,,/QuickSting;component/Images/svc_vnc.png"))
+                            Source = new BitmapImage(new Uri("pack://application:,,,/QuickSting;component/Images/svc_vnc.png")),
+                            Height = 16.0,
+                            Width = 16.0
                         };
                     } else if (service.ServiceType.Equals("CMD")) {
                         menuItem.Icon = new Image {
-                            Source = new BitmapImage(new Uri("pack://application:,,,/QuickSting;component/Images/svc_cmd_line.png"))
+                            Source = new BitmapImage(new Uri("pack://application:,,,/QuickSting;component/Images/svc_cmd_line.png")),
+                            Height = 16.0,
+                            Width = 16.0
                         };
                     } else if (service.ServiceType.Equals("WEB")) {
                         menuItem.Icon = new Image {
-                            Source = new BitmapImage(new Uri("pack://application:,,,/QuickSting;component/Images/svc_web.png"))
+                            Source = new BitmapImage(new Uri("pack://application:,,,/QuickSting;component/Images/svc_web.png")),
+                            Height = 16.0,
+                            Width = 16.0
                         };
                     } else {
                         menuItem.Icon = new Image {
-                            Source = new BitmapImage(new Uri("pack://application:,,,/QuickSting;component/Images/svc_blank.png"))
+                            Source = new BitmapImage(new Uri("pack://application:,,,/QuickSting;component/Images/svc_blank.png")),
+                            Height = 16.0,
+                            Width = 16.0
                         };
                     }
                     

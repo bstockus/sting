@@ -242,8 +242,8 @@
                             Grid.Column="0" 
                             Orientation="Horizontal">
                     <Button x:Name="btnNotify"
-                            Height="20" 
-                            Width="20"
+                            Height="16" 
+                            Width="16"
                             Margin="2,0"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Top" Click="btnNotify_Click">
@@ -332,17 +332,23 @@
                             <ContextMenu x:Name="ctxSiteDetails">
                                 <MenuItem Header="Store Pictures">
                                     <MenuItem.Icon>
-                                        <Image Source="Images/site_pics.png"></Image>
+                                        <Image Source="Images/site_pics.png"
+                                               Height="16"
+                                               Width="16"></Image>
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <MenuItem Header="Call Store">
                                     <MenuItem.Icon>
-                                        <Image Source="Images/site_phone.png"></Image>
+                                        <Image Source="Images/site_phone.png"
+                                               Height="16"
+                                               Width="16"></Image>
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <MenuItem Header="E-Mail Store">
                                     <MenuItem.Icon>
-                                        <Image Source="Images/site_mail.png"></Image>
+                                        <Image Source="Images/site_mail.png"
+                                               Height="16"
+                                               Width="16"></Image>
                                     </MenuItem.Icon>
                                 </MenuItem>
                             </ContextMenu>
@@ -357,8 +363,8 @@
                             HorizontalAlignment="Right">
 
                     <Button x:Name="btnMinimize"
-                            Height="20" 
-                            Width="20"
+                            Height="16" 
+                            Width="16"
                             Margin="2,0"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Top" 
@@ -383,8 +389,8 @@
                     </Button>
 
                     <Button x:Name="btnClose"
-                            Height="20" 
-                            Width="20"
+                            Height="16" 
+                            Width="16"
                             Margin="2,0"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Top" 
@@ -432,9 +438,6 @@
                         </blend:Interaction.Behaviors>
 
                         <ListBox.Resources>
-                            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
-                            <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
-                            <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent" />
                             <Style x:Key="SiteGroupContainerStyle" TargetType="{x:Type GroupItem}">
                                 <Setter Property="Template">
                                     <Setter.Value>
@@ -602,7 +605,6 @@
                                         Width="55" 
                                         Height="60">
                                     <Grid>
-
                                         <blend:Interaction.Behaviors>
                                             <local:BubbleScrollEvent />
                                         </blend:Interaction.Behaviors>
