@@ -145,7 +145,7 @@ namespace Sting {
             try {
                 this.servicesManagerConfig = ConfigFileHelper.LoadConfigFile<ServicesManagerConfig>("Services.xml");
                 this.IsVncServiceAvailable = true;
-            } catch (ConfigFileDoesntExistException e) {
+            } catch (ConfigFileDoesntExistException) {
                 System.Diagnostics.Debug.WriteLine("Services.xml doesn't exist, will be unable to run any external services.");
             }
 
@@ -186,7 +186,7 @@ namespace Sting {
                 startInfo.Arguments = vncArguments;
                 process.StartInfo = startInfo;
                 process.Start();
-            } catch (Exception e) {
+            } catch (Exception) {
                 System.Diagnostics.Debug.WriteLine("Unable to launch VNC Service.");
             }
         }

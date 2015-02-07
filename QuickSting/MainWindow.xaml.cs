@@ -105,15 +105,13 @@ namespace QuickSting {
 
         private void pingDispatchTimer_Tick(object sender, EventArgs e) {
             System.Diagnostics.Debug.WriteLine("pingDispatchTimer_Tick");
-            if (!this.IsPaused) {
-                Task.Factory.StartNew(() => {
-                    foreach (Host host in this.HostCollection) {
-                        if (this.groupsDictionary[host.GroupName]) {
-                            host.Ping(this.IsPaused).Start();
-                        }
+            Task.Factory.StartNew(() => {
+                foreach (Host host in this.HostCollection) {
+                    if (this.groupsDictionary[host.GroupName]) {
+                        host.Ping(!this.IsPaused, this.SiteName).Start();
                     }
-                });
-            }
+                }
+            });
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -152,6 +150,18 @@ namespace QuickSting {
         private void btnSiteDetails_Click(object sender, RoutedEventArgs e) {
             System.Diagnostics.Debug.WriteLine("btnSiteDetails_Click");
             this.ctxSiteDetails.IsOpen = true;
+        }
+
+        private void ctxSiteDetails_StorePictures_Click(object sender, RoutedEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("ctxSiteDetails_StorePictures_Click");
+        }
+
+        private void ctxSiteDetails_CallStore_Click(object sender, RoutedEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("ctxSiteDetails_CallStore_Click");
+        }
+
+        private void ctxSiteDetails_EmailStore_Click(object sender, RoutedEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("ctxSiteDetails_EmailStore_Click");
         }
 
     }

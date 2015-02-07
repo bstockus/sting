@@ -10,6 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using System.Xml.Serialization;
 
 namespace QuickSting {
@@ -114,8 +115,6 @@ namespace QuickSting {
         }
 
         public IPAddress IPAddress { get; private set; }
-
-        public IExternalProgram[] ExternalPrograms { get; private set; }
 
         public Host(HostInformation hostInformation, IPAddress ipAddress) {
             this.Name = hostInformation.Name;
@@ -233,14 +232,14 @@ namespace QuickSting {
 
         private List<Tuple<DateTime, PingReply>> pingReplyHistory = new List<Tuple<DateTime, PingReply>>();
 
-        public Task Ping(bool notify) {
+        public Task Ping(bool notify, string siteName) {
             Task task = new Task(() => {
-                this.DoPing(notify);
+                this.DoPing(notify, siteName);
             });
             return task;
         }
 
-        private void DoPing(bool notify) {
+        private void DoPing(bool notify, string siteName) {
             System.Diagnostics.Debug.WriteLine("Sent Ping to " + this.IPAddress.ToString());
             Ping ping = new Ping();
             PingOptions pingOptions = new PingOptions();
@@ -259,7 +258,16 @@ namespace QuickSting {
                 }
                 if (this.HostStatus != QuickSting.HostStatus.Up) {
                     this.lastStatusChangeTime = DateTime.Now;
-                    //NotificationManager.GetNotificationManager().Notify(this.NotificationTitle, "Host is Up!", "green_up_arrow.png");
+                    if (this.HostStatus == QuickSting.HostStatus.Down && notify) {
+                        App.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => {
+                            QuickStingWindow.Notifications.AddNotification(new Notification {
+                                Title = "Host Up",
+                                ImageUrl = "pack://application:,,,/Images/status_up.png",
+                                Message = siteName + "/" + this.Name + " is Up!"
+                            });
+                        }));
+                    }
+                    
                     this.OnPropertyChanged(new PropertyChangedEventArgs("IsHostUp"));
                 }
                 this.HostStatus = QuickSting.HostStatus.Up;
@@ -278,6 +286,15 @@ namespace QuickSting {
                     } else if (DateTime.Now - this.firstBadPingTime > BAD_PING_STREAK_TIMEOUT) {
                         this.lastStatusChangeTime = DateTime.Now;
                         this.HostStatus = QuickSting.HostStatus.Down;
+                        if ((this.HostStatus == QuickSting.HostStatus.Up || this.HostStatus == QuickSting.HostStatus.Bad) && notify) {
+                            App.Current.Dispatcher.Invoke(DispatcherPriority.Normal, new Action(() => {
+                                QuickStingWindow.Notifications.AddNotification(new Notification {
+                                    Title = "Host Down",
+                                    ImageUrl = "pack://application:,,,/Images/status_down.png",
+                                    Message = siteName + "/" + this.Name + " is Down!"
+                                });
+                            }));
+                        }
                         //NotificationManager.GetNotificationManager().Notify(this.NotificationTitle, "Host is Down!", "red_down_arrow.png");
                         this.OnPropertyChanged(new PropertyChangedEventArgs("IsHostUp"));
                     }

@@ -23,6 +23,14 @@ namespace QuickSting {
 
         HostProvider hostProvider = new HostProvider();
 
+        readonly static GrowlNotifiactions growlNotifications = new GrowlNotifiactions();
+
+        public static GrowlNotifiactions Notifications {
+            get {
+                return growlNotifications;
+            }
+        }
+
         public QuickStingWindow() {
             InitializeComponent();
 
@@ -88,6 +96,10 @@ namespace QuickSting {
                 this.HideWindow();
 
             }
+        }
+
+        private void ctxSysTrayMenu_Quit_Click(object sender, RoutedEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("ctxSysTrayMenu_Quit_Click");
         }
 
     }

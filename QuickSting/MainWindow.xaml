@@ -8,7 +8,7 @@
         Title="" 
         Icon="Images/lighting_icon.png"
         Height="300" 
-        Width="400"
+        Width="300"
         AllowsTransparency="True" 
         Background="Transparent" 
         WindowStyle="None"
@@ -246,7 +246,8 @@
                             Width="16"
                             Margin="2,0"
                             HorizontalAlignment="Right"
-                            VerticalAlignment="Top" Click="btnNotify_Click">
+                            VerticalAlignment="Top" 
+                            Click="btnNotify_Click">
                         <Button.Template>
                             <ControlTemplate TargetType="{x:Type Button}">
                                 <ControlTemplate.Triggers>
@@ -300,7 +301,7 @@
                             Grid.Row="0">
                     <TextBlock Foreground="White" 
                                FontWeight="Bold" 
-                               FontSize="20"
+                               FontSize="16"
                                Text="{Binding RelativeSource={RelativeSource AncestorType=local:MainWindow}, Path=SiteName}"
                                HorizontalAlignment="Center"></TextBlock>
                     <Button x:Name="btnSiteDetails"
@@ -330,21 +331,27 @@
                         </Button.Template>
                         <Button.ContextMenu>
                             <ContextMenu x:Name="ctxSiteDetails">
-                                <MenuItem Header="Store Pictures">
+                                <MenuItem x:Name="ctxSiteDetails_StorePictures" 
+                                          Header="Store Pictures" 
+                                          Click="ctxSiteDetails_StorePictures_Click">
                                     <MenuItem.Icon>
                                         <Image Source="Images/site_pics.png"
                                                Height="16"
                                                Width="16"></Image>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Call Store">
+                                <MenuItem x:Name="ctxSiteDetails_CallStore" 
+                                          Header="Call Store" 
+                                          Click="ctxSiteDetails_CallStore_Click">
                                     <MenuItem.Icon>
                                         <Image Source="Images/site_phone.png"
                                                Height="16"
                                                Width="16"></Image>
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="E-Mail Store">
+                                <MenuItem x:Name="ctxSiteDetails_EmailStore" 
+                                          Header="E-Mail Store" 
+                                          Click="ctxSiteDetails_EmailStore_Click">
                                     <MenuItem.Icon>
                                         <Image Source="Images/site_mail.png"
                                                Height="16"
@@ -431,7 +438,8 @@
                     <ListBox x:Name="lstHosts" 
                              ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
                              Background="Transparent" 
-                             BorderBrush="Transparent">
+                             BorderBrush="Transparent" 
+                             Focusable="False">
 
                         <blend:Interaction.Behaviors>
                             <local:BubbleScrollEvent />
@@ -520,8 +528,8 @@
                                                         <TextBlock Text="{Binding Name}" 
                                                                    FontWeight="Bold" 
                                                                    Foreground="White" 
-                                                                   FontSize="18" 
-                                                                   VerticalAlignment="Bottom"></TextBlock>
+                                                                   FontSize="14" 
+                                                                   VerticalAlignment="Center"></TextBlock>
                                                     </StackPanel>
                                                 </Expander.Header>
                                                 <ItemsPresenter />
@@ -569,14 +577,13 @@
                                             
                                             <ControlTemplate.Triggers>
                                                 <Trigger Property="IsSelected" Value="true">
-                                                    <Setter Property="Background" 
-                                                            TargetName="Bd" 
-                                                            Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
-                                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"/>
+                                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+                                                    <Setter Property="Background" Value="Transparent"></Setter>
                                                 </Trigger>
 
                                                 <Trigger Property="IsEnabled" Value="false">
-                                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                                                    <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+                                                    <Setter Property="Background" Value="Transparent"></Setter>
                                                 </Trigger>
                                             </ControlTemplate.Triggers>
                                             
@@ -598,12 +605,11 @@
 
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <Border Margin="1" 
+                                <Border Margin="5,1" 
                                         BorderThickness="0" 
                                         BorderBrush="Gray" 
-                                        CornerRadius="10" 
-                                        Width="55" 
-                                        Height="60">
+                                        CornerRadius="10"
+                                        Height="50">
                                     <Grid>
                                         <blend:Interaction.Behaviors>
                                             <local:BubbleScrollEvent />
@@ -614,14 +620,14 @@
                                         </Grid.ColumnDefinitions>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="20"></RowDefinition>
-                                            <RowDefinition Height="40"></RowDefinition>
+                                            <RowDefinition Height="30"></RowDefinition>
                                         </Grid.RowDefinitions>
                                         
                                         <TextBlock Grid.Row="0" 
                                                    Grid.Column="0"
                                                    HorizontalAlignment="Center" 
                                                    Text="{Binding Path=Name}"
-                                                   FontSize="14"
+                                                   FontSize="12"
                                                    FontWeight="Thin"
                                                    Foreground="White"
                                                    TextWrapping="WrapWithOverflow"
@@ -632,7 +638,8 @@
                                                 Grid.Column="0" 
                                                 VerticalAlignment="Center" 
                                                 HorizontalAlignment="Center"
-                                                Width="30"
+                                                Width="20"
+                                                Height="20"
                                                 ContextMenu="{Binding HostControls}">
                                             <Button.Template>
                                                 <ControlTemplate TargetType="{x:Type Button}">

@@ -5,6 +5,7 @@
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:Microsoft_Windows_Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero"
         xmlns:blend="http://schemas.microsoft.com/expression/2010/interactivity"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
         Title="Quick Sting" 
         Icon="Images/lighting_icon.png"
         Height="90" 
@@ -19,7 +20,7 @@
         Activated="Window_Activated" 
         Deactivated="Window_Deactivated"
         Visibility="Hidden">
-
+    
     <Window.Resources>
         <Style TargetType="{x:Type TextBox}">
             <Setter Property="Template">
@@ -42,6 +43,17 @@
     </Window.Resources>
 
     <Grid RenderTransformOrigin="0,1">
+
+        <tb:TaskbarIcon IconSource="/Images/output.ico"
+                        ToolTipText="QuickSting">
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu x:Name="ctxSysTrayMenu">
+                    <MenuItem x:Name="ctxSysTrayMenu_Quit"
+                              Header="Quit QuickSting" 
+                              Click="ctxSysTrayMenu_Quit_Click"></MenuItem>
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+        </tb:TaskbarIcon>
 
         <Border BorderThickness="1" 
                 Background="Black" 
