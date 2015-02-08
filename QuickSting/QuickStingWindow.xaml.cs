@@ -25,6 +25,13 @@ namespace QuickSting {
 
         readonly static GrowlNotifiactions growlNotifications = new GrowlNotifiactions();
 
+        private static Dictionary<string, MainWindow> currentSiteWindows = new Dictionary<string, MainWindow>();
+        private static Dictionary<string, HostCollection> hostCollectionsCache = new Dictionary<string, HostCollection>();
+
+        public static void SiteWindowClosed(string name) {
+            currentSiteWindows.Remove(name);
+        }
+
         public static GrowlNotifiactions Notifications {
             get {
                 return growlNotifications;
@@ -85,15 +92,27 @@ namespace QuickSting {
                 e.Handled = true;
             } else if (e.Key == Key.Enter) {
                 e.Handled = true;
-                try {
-                    HostCollection hostCollection = this.hostProvider.Host(this.txtSearch.Text);
-                    MainWindow mainWindow = new MainWindow(this.txtSearch.Text, hostCollection);
-                    mainWindow.Show();
-                } catch (Exception) {
-                    System.Windows.MessageBox.Show("Unable to locate host " + this.txtSearch.Text + ".", "ERROR");
-                }
-
                 this.HideWindow();
+                if (currentSiteWindows.ContainsKey(this.txtSearch.Text)) {
+                    currentSiteWindows[this.txtSearch.Text].Activate();
+                } else {
+                    if (hostCollectionsCache.ContainsKey(this.txtSearch.Text)) {
+                        MainWindow mainWindow = new MainWindow(this.txtSearch.Text, hostCollectionsCache[this.txtSearch.Text]);
+                        currentSiteWindows.Add(this.txtSearch.Text, mainWindow);
+                        mainWindow.Show();
+                    } else {
+                        try {
+                            HostCollection hostCollection = this.hostProvider.Host(this.txtSearch.Text);
+                            MainWindow mainWindow = new MainWindow(this.txtSearch.Text, hostCollection);
+                            hostCollectionsCache.Add(this.txtSearch.Text, hostCollection);
+                            currentSiteWindows.Add(this.txtSearch.Text, mainWindow);
+                            mainWindow.Show();
+                        } catch (Exception) {
+                            System.Windows.MessageBox.Show("Unable to locate host " + this.txtSearch.Text + ".", "ERROR");
+                        }
+                    }
+                    
+                }
 
             }
         }

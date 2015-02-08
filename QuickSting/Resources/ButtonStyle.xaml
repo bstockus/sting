@@ -51,7 +51,12 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
                     <Grid>
-                        <Border x:Name="Border" CornerRadius="3" BorderThickness="0" ClipToBounds="False" Background="{StaticResource CloseNormal}" BorderBrush="{StaticResource NormalBorderBrush}">
+                        <Border x:Name="Border" 
+                                CornerRadius="3" 
+                                BorderThickness="0" 
+                                ClipToBounds="False" 
+                                Background="{StaticResource CloseNormal}" 
+                                BorderBrush="{StaticResource NormalBorderBrush}">
                             <Border.Effect>
                                 <DropShadowEffect ShadowDepth="0" Opacity=".4" BlurRadius="5" Color="Black"/>
                             </Border.Effect>

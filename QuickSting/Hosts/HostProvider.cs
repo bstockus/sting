@@ -21,29 +21,49 @@ using System.Threading.Tasks;
 using System.Xml.Serialization;
 
 namespace QuickSting {
+
+    [Serializable]
+    [XmlRoot("SpecialHosts")]
+    public class SpecialHosts {
+
+        [XmlAttribute("DnsPattern")]
+        public string DnsPattern { get; set; }
+
+        [XmlElement("Group")]
+        public List<HostsGroup> Groups { get; set; }
+
+    }
+
+    [Serializable]
+    public class HostsGroup {
+
+        [XmlAttribute("Name")]
+        public string Name { get; set; }
+
+        [XmlElement("Host")]
+        public List<HostInformation> Hosts { get; set; }
+
+    }
+
     public class HostProvider {
-
-        [Serializable]
-        [XmlRoot("SpecialHosts")]
-        public class SpecialHosts {
-
-            [XmlAttribute("DnsPattern")]
-            public string DnsPattern { get; set; }
-
-            [XmlElement("Host")]
-            public List<HostInformation> Hosts { get; set; }
-
-        }
 
         private SpecialHosts specialHosts = null;
 
         private Dictionary<String, IPAddress> hostIPAddressCache = new Dictionary<string, IPAddress>();
-        private Dictionary<String, HostInformation> hostsCache = new Dictionary<string, HostInformation>();
+        private Dictionary<String, HostDefinition> hostsCache = new Dictionary<string, HostDefinition>();
 
         public HostProvider() {
             this.specialHosts = ConfigFileHelper.LoadConfigFile<SpecialHosts>("SpecialHosts.xml");
-            foreach (HostInformation host in this.specialHosts.Hosts) {
-                this.hostsCache.Add(host.HostOctet, host);
+            foreach (HostsGroup group in this.specialHosts.Groups) {
+                foreach (HostInformation host in group.Hosts) {
+                    this.hostsCache.Add(host.HostOctet, new HostDefinition {
+                        HostOctet = host.HostOctet,
+                        Name = host.Name,
+                        GroupName = group.Name,
+                        Description = host.Description,
+                        Services = host.Services
+                    });
+                }
             }
         }
 
@@ -63,12 +83,11 @@ namespace QuickSting {
         }
 
         public HostCollection Host(string value) {
-
             HostCollection hostCollection = new HostCollection();
 
             IPAddress siteAddress = GetSiteAddress(value);
 
-            foreach (HostInformation host in hostsCache.Values) {
+            foreach (HostDefinition host in hostsCache.Values) {
                 Byte[] siteAddressBytes = siteAddress.GetAddressBytes();
                 siteAddressBytes[3] = byte.Parse(host.HostOctet);
                 IPAddress hostAddress = new IPAddress(siteAddressBytes);
@@ -76,7 +95,6 @@ namespace QuickSting {
             }
 
             return hostCollection;
-
         }
 
         public static IPAddress Lookup(String value) {

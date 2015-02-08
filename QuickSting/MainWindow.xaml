@@ -15,7 +15,8 @@
         ResizeMode="NoResize"
         ShowInTaskbar="True"
         Loaded="Window_Loaded" 
-        MouseDown="Window_MouseDown">
+        MouseDown="Window_MouseDown" 
+        Closed="Window_Closed">
     
     <Window.Resources>
 
@@ -254,7 +255,7 @@
                                     <MultiDataTrigger>
                                         <MultiDataTrigger.Conditions>
                                             <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="False"></Condition>
-                                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:MainWindow}, Path=IsPaused}" Value="False"></Condition>
+                                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:MainWindow}, Path=HostCollection.IsPaused}" Value="False"></Condition>
                                         </MultiDataTrigger.Conditions>
                                         <Setter TargetName="img" 
                                                 Property="Image.Source" 
@@ -263,7 +264,7 @@
                                     <MultiDataTrigger>
                                         <MultiDataTrigger.Conditions>
                                             <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="False"></Condition>
-                                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:MainWindow}, Path=IsPaused}" Value="True"></Condition>
+                                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:MainWindow}, Path=HostCollection.IsPaused}" Value="True"></Condition>
                                         </MultiDataTrigger.Conditions>
                                         <Setter TargetName="img" 
                                                 Property="Image.Source" 
@@ -272,7 +273,7 @@
                                     <MultiDataTrigger>
                                         <MultiDataTrigger.Conditions>
                                             <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="True"></Condition>
-                                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:MainWindow}, Path=IsPaused}" Value="False"></Condition>
+                                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:MainWindow}, Path=HostCollection.IsPaused}" Value="False"></Condition>
                                         </MultiDataTrigger.Conditions>
                                         <Setter TargetName="img" 
                                                 Property="Image.Source" 
@@ -281,7 +282,7 @@
                                     <MultiDataTrigger>
                                         <MultiDataTrigger.Conditions>
                                             <Condition Binding="{Binding RelativeSource={RelativeSource Mode=Self}, Path=IsMouseOver}" Value="True"></Condition>
-                                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:MainWindow}, Path=IsPaused}" Value="True"></Condition>
+                                            <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=local:MainWindow}, Path=HostCollection.IsPaused}" Value="True"></Condition>
                                         </MultiDataTrigger.Conditions>
                                         <Setter TargetName="img" 
                                                 Property="Image.Source" 

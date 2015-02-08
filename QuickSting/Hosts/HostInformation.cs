@@ -11,13 +11,24 @@ namespace QuickSting {
         [XmlAttribute("Name")]
         public string Name { get; set; }
 
-        [XmlAttribute("Group")]
-        public string GroupName { get; set; }
-
         [XmlAttribute("Description")]
         public string Description { get; set; }
 
         [XmlElement("Service")]
+        public Service[] Services { get; set; }
+
+    }
+
+    public struct HostDefinition {
+
+        public string HostOctet { get; set; }
+
+        public string Name { get; set; }
+
+        public string GroupName { get; set; }
+
+        public string Description { get; set; }
+
         public Service[] Services { get; set; }
 
     }

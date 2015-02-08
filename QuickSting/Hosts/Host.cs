@@ -100,16 +100,16 @@ namespace QuickSting {
 
         public IPAddress IPAddress { get; private set; }
 
-        public Host(HostInformation hostInformation, IPAddress ipAddress) {
-            this.Name = hostInformation.Name;
-            this.GroupName = hostInformation.GroupName;
-            this.Description = hostInformation.Description;
+        public Host(HostDefinition hostDefinition, IPAddress ipAddress) {
+            this.Name = hostDefinition.Name;
+            this.GroupName = hostDefinition.GroupName;
+            this.Description = hostDefinition.Description;
             this.HostStatus = QuickSting.HostStatus.Unknown;
 
             ContextMenu contextMenu = new ContextMenu();
             contextMenu.Resources.Add("MenuPopupBrush", new SolidColorBrush(Color.FromRgb(0, 0, 0)));
-            if (hostInformation.Services != null) {
-                foreach (Service service in hostInformation.Services) {
+            if (hostDefinition.Services != null) {
+                foreach (Service service in hostDefinition.Services) {
                     MenuItem menuItem = new MenuItem();
                     if (service.ServiceType.Equals("VNC")) {
                         menuItem.Icon = new Image {
@@ -187,13 +187,7 @@ namespace QuickSting {
             MenuItem menuItem = (MenuItem)e.Source;
             Service service = (Service)menuItem.Tag;
             System.Diagnostics.Debug.WriteLine(service.CommandLine);
-            string commandLine = service.CommandLine;
-            if (commandLine == null) commandLine = "";
-            commandLine = commandLine.Replace("%%%IP%%%", this.IPAddress.ToString());
-            System.Diagnostics.ProcessStartInfo startInfo = new System.Diagnostics.ProcessStartInfo();
-            startInfo.Arguments = commandLine;
-            startInfo.FileName = service.Program.Replace("%%%IP%%%", this.IPAddress.ToString()); ;
-            System.Diagnostics.Process.Start(startInfo);
+            service.Launch(this.IPAddress);
         }
 
         #region Ping Handler
@@ -208,7 +202,7 @@ namespace QuickSting {
         private DateTime firstBadPingTime = DateTime.Now;
         private Boolean isInBadPingStreak = false;
 
-        private List<Tuple<DateTime, PingReply>> pingReplyHistory = new List<Tuple<DateTime, PingReply>>();
+        //private List<Tuple<DateTime, PingReply>> pingReplyHistory = new List<Tuple<DateTime, PingReply>>();
 
         public Task Ping(bool notify, string siteName) {
             Task task = new Task(() => {
@@ -228,7 +222,7 @@ namespace QuickSting {
 
             PingReply reply = ping.Send(this.IPAddress, 120, buffer, pingOptions);
 
-            this.pingReplyHistory.Add(new Tuple<DateTime, PingReply>(DateTime.Now, reply));
+            //this.pingReplyHistory.Add(new Tuple<DateTime, PingReply>(DateTime.Now, reply));
 
             if (reply.Status == IPStatus.Success) {
                 if (this.isInBadPingStreak) {

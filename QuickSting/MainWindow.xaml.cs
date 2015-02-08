@@ -26,21 +26,9 @@ namespace QuickSting {
 
         private Dictionary<string, bool> groupsDictionary = new Dictionary<string, bool>();
 
-        private bool paused = false;
-
         private IntPtr windowHandle;
 
         public String SiteName { get; set; }
-
-        public bool IsPaused {
-            get {
-                return this.paused;
-            }
-            set {
-                this.paused = value;
-                this.NotifyPropertyChanged("IsPaused");
-            }
-        }
 
         public MainWindow(String title, HostCollection hostCollection) {
             this.HostCollection = hostCollection;
@@ -49,8 +37,6 @@ namespace QuickSting {
         }
 
         private System.Windows.Threading.DispatcherTimer pingDispatchTimer = new System.Windows.Threading.DispatcherTimer();
-
-
 
         //Attach this to the PreviewMousLeftButtonDown event of the grip control in the lower right corner of the form to resize the window
         private void WindowResize(object sender, MouseButtonEventArgs e) {
@@ -75,18 +61,6 @@ namespace QuickSting {
             System.Diagnostics.Debug.WriteLine("Window_Loaded");
             this.lstHosts.ItemsSource = this.HostCollection;
 
-            ICollectionView view = CollectionViewSource.GetDefaultView(lstHosts.ItemsSource);
-            view.GroupDescriptions.Add(new PropertyGroupDescription("GroupName"));
-            view.SortDescriptions.Add(new SortDescription("GroupName", ListSortDirection.Ascending));
-
-            foreach (CollectionViewGroup group in view.Groups) {
-                if (group.Name.ToString().Equals("")) {
-                    this.groupsDictionary.Add(group.Name.ToString(), true);
-                } else {
-                    this.groupsDictionary.Add(group.Name.ToString(), false);
-                }
-            }
-
             this.pingDispatchTimer.Tick += new EventHandler(pingDispatchTimer_Tick);
             this.pingDispatchTimer.Interval = new TimeSpan(0, 0, 2);
             this.pingDispatchTimer.Start();
@@ -105,13 +79,7 @@ namespace QuickSting {
 
         private void pingDispatchTimer_Tick(object sender, EventArgs e) {
             System.Diagnostics.Debug.WriteLine("pingDispatchTimer_Tick");
-            Task.Factory.StartNew(() => {
-                foreach (Host host in this.HostCollection) {
-                    if (this.groupsDictionary[host.GroupName]) {
-                        host.Ping(!this.IsPaused, this.SiteName).Start();
-                    }
-                }
-            });
+            this.HostCollection.PingHosts(this.SiteName);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -130,7 +98,7 @@ namespace QuickSting {
             Expander expander = (Expander)e.Source;
             CollectionViewGroup collectionViewGroup = (CollectionViewGroup)expander.DataContext;
             System.Diagnostics.Debug.WriteLine(collectionViewGroup.Name);
-            this.groupsDictionary[collectionViewGroup.Name.ToString()] = false;
+            this.HostCollection.GroupCollapsed(collectionViewGroup.Name.ToString());
         }
 
         private void Expander_Expanded(object sender, RoutedEventArgs e) {
@@ -138,12 +106,12 @@ namespace QuickSting {
             Expander expander = (Expander)e.Source;
             CollectionViewGroup collectionViewGroup = (CollectionViewGroup)expander.DataContext;
             System.Diagnostics.Debug.WriteLine(collectionViewGroup.Name);
-            this.groupsDictionary[collectionViewGroup.Name.ToString()] = true;
+            this.HostCollection.GroupExpanded(collectionViewGroup.Name.ToString());
         }
 
         private void btnNotify_Click(object sender, RoutedEventArgs e) {
             System.Diagnostics.Debug.WriteLine("btnNotify_Click");
-            this.IsPaused = !(this.IsPaused);
+            this.HostCollection.IsPaused = !(this.HostCollection.IsPaused);
             this.NotifyPropertyChanged("IsPaused");
         }
 
@@ -162,6 +130,10 @@ namespace QuickSting {
 
         private void ctxSiteDetails_EmailStore_Click(object sender, RoutedEventArgs e) {
             System.Diagnostics.Debug.WriteLine("ctxSiteDetails_EmailStore_Click");
+        }
+
+        private void Window_Closed(object sender, EventArgs e) {
+            QuickStingWindow.SiteWindowClosed(this.SiteName);
         }
 
     }
