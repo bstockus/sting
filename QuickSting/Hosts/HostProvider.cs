@@ -29,6 +29,9 @@ namespace QuickSting {
         [XmlAttribute("DnsPattern")]
         public string DnsPattern { get; set; }
 
+        [XmlElement("Site")]
+        public Site Site { get; set; }
+
         [XmlElement("Group")]
         public List<HostsGroup> Groups { get; set; }
 
@@ -51,6 +54,12 @@ namespace QuickSting {
 
         private Dictionary<String, IPAddress> hostIPAddressCache = new Dictionary<string, IPAddress>();
         private Dictionary<String, HostDefinition> hostsCache = new Dictionary<string, HostDefinition>();
+
+        public Site Site {
+            get {
+                return this.specialHosts.Site;
+            }
+        }
 
         public HostProvider() {
             this.specialHosts = ConfigFileHelper.LoadConfigFile<SpecialHosts>("SpecialHosts.xml");

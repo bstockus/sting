@@ -28,11 +28,14 @@ namespace QuickSting {
 
         private IntPtr windowHandle;
 
+        private Site site;
+
         public String SiteName { get; set; }
 
-        public MainWindow(String title, HostCollection hostCollection) {
+        public MainWindow(String title, HostCollection hostCollection, Site site) {
             this.HostCollection = hostCollection;
             this.SiteName = title;
+            this.site = site;
             InitializeComponent();
         }
 
@@ -122,14 +125,17 @@ namespace QuickSting {
 
         private void ctxSiteDetails_StorePictures_Click(object sender, RoutedEventArgs e) {
             System.Diagnostics.Debug.WriteLine("ctxSiteDetails_StorePictures_Click");
+            System.Diagnostics.Process.Start(this.site.PicturesFolderUrl.Replace("%%%SITE%%%", this.SiteName));
         }
 
         private void ctxSiteDetails_CallStore_Click(object sender, RoutedEventArgs e) {
             System.Diagnostics.Debug.WriteLine("ctxSiteDetails_CallStore_Click");
+            System.Diagnostics.Process.Start(this.site.PhoneNumberUrl.Replace("%%%SITE%%%", this.SiteName));
         }
 
         private void ctxSiteDetails_EmailStore_Click(object sender, RoutedEventArgs e) {
             System.Diagnostics.Debug.WriteLine("ctxSiteDetails_EmailStore_Click");
+            System.Diagnostics.Process.Start(this.site.EmailUrl.Replace("%%%SITE%%%", this.SiteName));
         }
 
         private void Window_Closed(object sender, EventArgs e) {

@@ -97,13 +97,13 @@ namespace QuickSting {
                     currentSiteWindows[this.txtSearch.Text].Activate();
                 } else {
                     if (hostCollectionsCache.ContainsKey(this.txtSearch.Text)) {
-                        MainWindow mainWindow = new MainWindow(this.txtSearch.Text, hostCollectionsCache[this.txtSearch.Text]);
+                        MainWindow mainWindow = new MainWindow(this.txtSearch.Text, hostCollectionsCache[this.txtSearch.Text], this.hostProvider.Site);
                         currentSiteWindows.Add(this.txtSearch.Text, mainWindow);
                         mainWindow.Show();
                     } else {
                         try {
                             HostCollection hostCollection = this.hostProvider.Host(this.txtSearch.Text);
-                            MainWindow mainWindow = new MainWindow(this.txtSearch.Text, hostCollection);
+                            MainWindow mainWindow = new MainWindow(this.txtSearch.Text, hostCollection, this.hostProvider.Site);
                             hostCollectionsCache.Add(this.txtSearch.Text, hostCollection);
                             currentSiteWindows.Add(this.txtSearch.Text, mainWindow);
                             mainWindow.Show();
