@@ -125,17 +125,29 @@ namespace QuickSting {
 
         private void ctxSiteDetails_StorePictures_Click(object sender, RoutedEventArgs e) {
             System.Diagnostics.Debug.WriteLine("ctxSiteDetails_StorePictures_Click");
-            System.Diagnostics.Process.Start(this.site.PicturesFolderUrl.Replace("%%%SITE%%%", this.SiteName));
+            try {
+                System.Diagnostics.Process.Start(this.site.PicturesFolderUrl.Replace("%%%SITE%%%", this.SiteName));
+            } catch (Exception) {
+                MessageBox.Show("An error has occured while trying to launch the external program.", "ERROR", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            }
         }
 
         private void ctxSiteDetails_CallStore_Click(object sender, RoutedEventArgs e) {
             System.Diagnostics.Debug.WriteLine("ctxSiteDetails_CallStore_Click");
-            System.Diagnostics.Process.Start(this.site.PhoneNumberUrl.Replace("%%%SITE%%%", this.SiteName));
+            try {
+                System.Diagnostics.Process.Start(this.site.PhoneNumberUrl.Replace("%%%SITE%%%", this.SiteName));
+            } catch (Exception) {
+                MessageBox.Show("An error has occured while trying to launch the external program.", "ERROR", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            }
         }
 
         private void ctxSiteDetails_EmailStore_Click(object sender, RoutedEventArgs e) {
             System.Diagnostics.Debug.WriteLine("ctxSiteDetails_EmailStore_Click");
-            System.Diagnostics.Process.Start(this.site.EmailUrl.Replace("%%%SITE%%%", this.SiteName));
+            try {
+                System.Diagnostics.Process.Start(this.site.EmailUrl.Replace("%%%SITE%%%", this.SiteName));
+            } catch (Exception) {
+                MessageBox.Show("An error has occured while trying to launch the external program.", "ERROR", System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Error);
+            }
         }
 
         private void Window_Closed(object sender, EventArgs e) {
