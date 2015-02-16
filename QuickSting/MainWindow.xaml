@@ -8,7 +8,7 @@
         Title="" 
         Icon="Images/lighting_icon.png"
         Height="300" 
-        Width="300"
+        Width="200"
         AllowsTransparency="True" 
         Background="Transparent" 
         WindowStyle="None"
