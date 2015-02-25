@@ -7,7 +7,7 @@ using System.Windows.Data;
 namespace QuickSting {
     public class HostCollection : ObservableCollection<Host>, INotifyPropertyChanged {
 
-        private bool isPaused = false;
+        private bool isPaused = true;
 
         private Dictionary<string, bool> groupsDictionary = new Dictionary<string, bool>();
 
