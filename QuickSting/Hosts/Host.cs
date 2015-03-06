@@ -146,6 +146,15 @@ namespace QuickSting {
                 contextMenu.Items.Add(menuItem);
             }
 
+            // Add in the seperator
+            contextMenu.Items.Add(new Separator());
+
+            // Add in the Paste IP to Clipboard
+            MenuItem copyIpAddressMenuItem = new MenuItem();
+            copyIpAddressMenuItem.Header = "Copy IP Address";
+            copyIpAddressMenuItem.Click += this.ServicesMenuCopyIpAddressItem_Click;
+            contextMenu.Items.Add(copyIpAddressMenuItem);
+
             Grid grid = new Grid();
 
             ColumnDefinition columnDefinition1 = new ColumnDefinition();
@@ -185,6 +194,11 @@ namespace QuickSting {
             Service service = (Service)menuItem.Tag;
             System.Diagnostics.Debug.WriteLine(service.CommandLine);
             service.Launch(this.IPAddress);
+        }
+
+        public void ServicesMenuCopyIpAddressItem_Click(Object sender, RoutedEventArgs e) {
+            System.Diagnostics.Debug.WriteLine("ServicesMenuCopyIpAddressItem_Click");
+            Clipboard.SetText(this.IPAddress.ToString());
         }
 
         #region Ping Handler
